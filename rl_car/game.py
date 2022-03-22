@@ -1,3 +1,3 @@
-import arcade
+"""Implement the game"""
 
-
+# import arcade

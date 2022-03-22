@@ -1,3 +1,3 @@
-# python-poetry-template
+# RL-Car
 
-A template Poetry project structure.
+Let's teach an AI to drive - using reinforcement learning.

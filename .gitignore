@@ -141,3 +141,5 @@ tests/reports
 
 # Makefile installation stamp
 .install.stamp
+
+rl_car/example

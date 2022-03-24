@@ -66,13 +66,26 @@ In-progress update goes here.
 
 _______________________________________________________________________________
 
-## [0.1.0] - YYYY-MM-DD
+## [0.1.0] - 2021-03-24
 
 This is the initial version of the project.
 
 ### Added
 
-- The base project
+- Bare-bones simulation
+- Quick-and-dirty development tutorial on `README.md`
+- Basic assets 'loaned' from CB
+
+### Changed
+
+- Project structure
+- Updated localisation files
+
+### Fixed
+
+- Linter issues
+- Removed unsupported versions from Tox builds
+- Project lead procrastination
 
 <!-- markdownlint-configure-file {
     "MD022": false,

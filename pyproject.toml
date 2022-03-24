@@ -88,7 +88,7 @@ disable = [
     # https://vald-phoenix.github.io/pylint-errors/
     'R0902',  # Too many instance attributes
     'R0901',  # Too many ancestors
-    'W0221',  # Parameters differ from overridden
+    'W0223',  # Abstract method not overridden
 ]
 
 

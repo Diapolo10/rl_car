@@ -44,14 +44,10 @@ class Player(arcade.Sprite):
         """Update position"""
 
         if self.speed > 0:
-            self.speed -= self.drag
-            if self.speed < 0:
-                self.speed = 0
+            self.speed = max(self.speed-self.drag, 0)
 
         if self.speed < 0:
-            self.speed += self.drag
-            if self.speed > 0:
-                self.speed = 0
+            self.speed = min(self.speed+self.drag, 0)
 
         self.speed += self.thrust
         if self.speed > self.max_speed:
@@ -173,35 +169,35 @@ class MyGame(arcade.Window):
             self.player_list.update()
 
 
-    def on_key_press(self, key: int, modifiers: int):
+    def on_key_press(self, symbol: int, modifiers: int):
         """Called whenever a key is pressed"""
 
         if self.player_sprite is None:
             return
 
-        if key == arcade.key.LEFT:
+        if symbol == arcade.key.LEFT:
             self.player_sprite.change_angle = 3
-        elif key == arcade.key.RIGHT:
+        elif symbol == arcade.key.RIGHT:
             self.player_sprite.change_angle = -3
-        elif key == arcade.key.UP:
+        elif symbol == arcade.key.UP:
             self.player_sprite.thrust = 0.15
-        elif key == arcade.key.DOWN:
+        elif symbol == arcade.key.DOWN:
             self.player_sprite.thrust = -.2
 
 
-    def on_key_release(self, key: int, modifiers: int):
+    def on_key_release(self, symbol: int, modifiers: int):
         """Called when the user releases a key"""
 
         if self.player_sprite is None:
             return
 
-        if key == arcade.key.LEFT:
+        if symbol == arcade.key.LEFT:
             self.player_sprite.change_angle = 0
-        elif key == arcade.key.RIGHT:
+        elif symbol == arcade.key.RIGHT:
             self.player_sprite.change_angle = 0
-        elif key == arcade.key.UP:
+        elif symbol == arcade.key.UP:
             self.player_sprite.thrust = 0
-        elif key == arcade.key.DOWN:
+        elif symbol == arcade.key.DOWN:
             self.player_sprite.thrust = 0
 
 

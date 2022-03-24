@@ -86,6 +86,9 @@ tox-gh-actions = '^2.9.1'
 max-line-length = 120
 disable = [
     # https://vald-phoenix.github.io/pylint-errors/
+    'R0902',  # Too many instance attributes
+    'R0901',  # Too many ancestors
+    'W0221',  # Parameters differ from overridden
 ]
 
 

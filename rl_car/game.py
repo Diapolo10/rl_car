@@ -6,7 +6,7 @@ from typing import Optional, Union
 
 import arcade
 
-from config import (  # type: ignore
+from config_file import (  # type: ignore
     WINDOW_WIDTH,
     WINDOW_HEIGHT,
     WINDOW_TITLE,
@@ -14,15 +14,20 @@ from config import (  # type: ignore
     MAX_SPEED,
     FRICTION,
     SPRITE_SCALING,
+    LASER_SCALED_LENGTH,
+    LASER_ANGLE,
 )
 
 ROOT_DIR = Path(__file__).parent
 IMAGE_DIR = ROOT_DIR / 'images'
 CAR_SPRITE = IMAGE_DIR / 'car.png'
-TRACK_SPRITE = IMAGE_DIR / 'track.png'
-TRACK_TP_SPRITE = IMAGE_DIR / 'track_tp.png'
+# TRACK_SPRITE = IMAGE_DIR / 'track.png'
+# TRACK_TP_SPRITE = IMAGE_DIR / 'track_tp.png'
+TRACK_BARE_SPRITE = IMAGE_DIR / 'track_bare.png'
+TRACK_BORDER_SPRITE = IMAGE_DIR / 'track_border.png'
 
 FilePath = Union[str, Path]
+
 
 class Player(arcade.Sprite):
     """ Player class """
@@ -73,7 +78,6 @@ class Player(arcade.Sprite):
 
             self.change_x = 0
 
-
         if self.bottom < 0:
             self.bottom = 0
 
@@ -86,6 +90,7 @@ class Player(arcade.Sprite):
 
         super().update()
 
+
 class MyGame(arcade.Window):
     """Main application class"""
 
@@ -96,9 +101,14 @@ class MyGame(arcade.Window):
 
         # Variables that will hold sprite lists
         self.player_list: Optional[arcade.SpriteList] = None
+        self.track_list: Optional[arcade.SpriteList] = None
 
         # Set up the player info
         self.player_sprite: Optional[Player] = None
+
+        # Set up track info
+        self.track_sprite: Optional[arcade.Sprite] = None
+        self.track_border_sprite: Optional[arcade.Sprite] = None
 
         # Track the current state of what key is pressed
         self.left_pressed = False
@@ -115,12 +125,26 @@ class MyGame(arcade.Window):
 
         # Sprite lists
         self.player_list = arcade.SpriteList()
+        self.track_list = arcade.SpriteList(is_static=True)
 
         # Set up the player
         self.player_sprite = Player(CAR_SPRITE, SPRITE_SCALING)
-        self.player_sprite.center_x = 50
-        self.player_sprite.center_y = 50
+        self.player_sprite.center_x = WINDOW_WIDTH // 10  # 50
+        self.player_sprite.center_y = WINDOW_HEIGHT // 10  # 50
         self.player_list.append(self.player_sprite)
+
+        # Set up the track
+        self.track_sprite = arcade.Sprite(
+            TRACK_BARE_SPRITE,
+            center_x=WINDOW_WIDTH//2,
+            center_y=WINDOW_HEIGHT//2
+        )
+        self.track_border_sprite = arcade.Sprite(
+            TRACK_BORDER_SPRITE,
+            center_x=WINDOW_WIDTH//2,
+            center_y=WINDOW_HEIGHT//2
+        )
+        self.track_list.extend((self.track_sprite, self.track_border_sprite))
 
 
     def on_draw(self):
@@ -128,58 +152,28 @@ class MyGame(arcade.Window):
 
         # This command has to happen before we start drawing
         self.clear()
-        
-        # Draw the track texture
-        arcade.draw_lrwh_rectangle_textured(
-            0, 0, WINDOW_WIDTH, WINDOW_HEIGHT,
-            arcade.load_texture(TRACK_TP_SPRITE)
-        )
 
         # Draw all the sprites.
+        self.track_list.draw()
         self.player_list.draw()
 
         # Player origin
         orig_x = self.player_sprite.center_x
         orig_y = self.player_sprite.center_y
         angle = self.player_sprite.angle
-        line_length = 800 * SPRITE_SCALING
+        line_length = LASER_SCALED_LENGTH
 
-        laser_lines = (
-            # Front
-            (orig_x, orig_y),
-            (orig_x - line_length * math.sin(math.radians(angle)), orig_y + line_length * math.cos(math.radians(angle))),
-            # Front-left
-            (orig_x, orig_y),
-            (orig_x - line_length * math.sin(math.radians(angle+45)), orig_y + line_length * math.cos(math.radians(angle+45))),
-            # Left
-            (orig_x, orig_y),
-            (orig_x - line_length * math.sin(math.radians(angle+90)), orig_y + line_length * math.cos(math.radians(angle+90))),
-            # Back-left
-            (orig_x, orig_y),
-            (orig_x - line_length * math.sin(math.radians(angle+135)), orig_y + line_length * math.cos(math.radians(angle+135))),
-            # Back
-            (orig_x, orig_y),
-            (orig_x - line_length * math.sin(math.radians(angle+180)), orig_y + line_length * math.cos(math.radians(angle+180))),
-            # Back-right
-            (orig_x, orig_y),
-            (orig_x - line_length * math.sin(math.radians(angle+225)), orig_y + line_length * math.cos(math.radians(angle+225))),
-            # Right
-            (orig_x, orig_y),
-            (orig_x - line_length * math.sin(math.radians(angle+270)), orig_y + line_length * math.cos(math.radians(angle+270))),
-            # Front-right
-            (orig_x, orig_y),
-            (orig_x - line_length * math.sin(math.radians(angle+315)), orig_y + line_length * math.cos(math.radians(angle+315))),
+        laser_lines: arcade.PointList = []
 
+        for offset in range(0, 360, LASER_ANGLE):
+            laser_lines.append((orig_x, orig_y))
+            laser_lines.append(
+                (
+                    orig_x - line_length * math.sin(math.radians(angle+offset)),
+                    orig_y + line_length * math.cos(math.radians(angle+offset))
+                )
+            )
 
-        )
-
-        # arcade.draw_line(
-        #     self.player_sprite.center_x,
-        #     self.player_sprite.center_y,
-        #     self.player_sprite.center_x - (800 * SPRITE_SCALING) * (math.sin(math.radians(self.player_sprite.angle))),
-        #     self.player_sprite.center_y + (800 * SPRITE_SCALING) * (math.cos(math.radians(self.player_sprite.angle))),
-        #     arcade.color.RED
-        # )
         arcade.draw_lines(laser_lines, arcade.color.RED)
 
         # Display speed

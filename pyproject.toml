@@ -14,12 +14,13 @@ omit = [
 
 [tool.flake8]
 max-line-length = 120
-extend-ignore = ''  # https://www.flake8rules.com/
+extend-ignore = 'E303,'  # https://www.flake8rules.com/
 max-complexity = 15  # Info: https://en.wikipedia.org/wiki/Cyclomatic_complexity
 per-file-ignores = """\
 # F401: Ignore "unused" imports
 # F403: Ignore star imports
 # F405: Ignore names from star imports
+# E303: Ignore too many blank lines
 __init__.py:F401,F403,F405\
 """
 

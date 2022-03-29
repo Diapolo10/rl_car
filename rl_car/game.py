@@ -39,7 +39,7 @@ class Player(arcade.Sprite):
         super().__init__(str(filename), scale, angle)
 
         # Info on where we are going.
-        # Angle comes in automatically from the parent class.
+        # Angle comes automatically from the parent class.
         self.thrust: float = 0
         self.speed: float = 0
         self.max_speed: float = MAX_SPEED
@@ -129,8 +129,8 @@ class MyGame(arcade.Window):
 
         # Set up the player
         self.player_sprite = Player(CAR_SPRITE, SPRITE_SCALING)
-        self.player_sprite.center_x = WINDOW_WIDTH // 10  # 50
-        self.player_sprite.center_y = WINDOW_HEIGHT // 10  # 50
+        self.player_sprite.center_x = WINDOW_WIDTH // 7  # 50
+        self.player_sprite.center_y = WINDOW_HEIGHT // 2  # 50
         self.player_list.append(self.player_sprite)
 
         # Set up the track
@@ -164,6 +164,7 @@ class MyGame(arcade.Window):
         line_length = LASER_SCALED_LENGTH
 
         laser_lines: arcade.PointList = []
+        # line_collision_points: arcade.PointList = []
 
         for offset in range(0, 360, LASER_ANGLE):
             laser_lines.append((orig_x, orig_y))

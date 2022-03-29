@@ -6,7 +6,7 @@ from typing import Optional, Union
 
 import arcade
 
-from .config import (  # type: ignore
+from config import (  # type: ignore
     WINDOW_WIDTH,
     WINDOW_HEIGHT,
     WINDOW_TITLE,
@@ -20,6 +20,7 @@ ROOT_DIR = Path(__file__).parent
 IMAGE_DIR = ROOT_DIR / 'images'
 CAR_SPRITE = IMAGE_DIR / 'car.png'
 TRACK_SPRITE = IMAGE_DIR / 'track.png'
+TRACK_TP_SPRITE = IMAGE_DIR / 'track_tp.png'
 
 FilePath = Union[str, Path]
 
@@ -127,13 +128,65 @@ class MyGame(arcade.Window):
 
         # This command has to happen before we start drawing
         self.clear()
+        
+        # Draw the track texture
+        arcade.draw_lrwh_rectangle_textured(
+            0, 0, WINDOW_WIDTH, WINDOW_HEIGHT,
+            arcade.load_texture(TRACK_TP_SPRITE)
+        )
 
         # Draw all the sprites.
         self.player_list.draw()
 
+        # Player origin
+        orig_x = self.player_sprite.center_x
+        orig_y = self.player_sprite.center_y
+        angle = self.player_sprite.angle
+        line_length = 800 * SPRITE_SCALING
+
+        laser_lines = (
+            # Front
+            (orig_x, orig_y),
+            (orig_x - line_length * math.sin(math.radians(angle)), orig_y + line_length * math.cos(math.radians(angle))),
+            # Front-left
+            (orig_x, orig_y),
+            (orig_x - line_length * math.sin(math.radians(angle+45)), orig_y + line_length * math.cos(math.radians(angle+45))),
+            # Left
+            (orig_x, orig_y),
+            (orig_x - line_length * math.sin(math.radians(angle+90)), orig_y + line_length * math.cos(math.radians(angle+90))),
+            # Back-left
+            (orig_x, orig_y),
+            (orig_x - line_length * math.sin(math.radians(angle+135)), orig_y + line_length * math.cos(math.radians(angle+135))),
+            # Back
+            (orig_x, orig_y),
+            (orig_x - line_length * math.sin(math.radians(angle+180)), orig_y + line_length * math.cos(math.radians(angle+180))),
+            # Back-right
+            (orig_x, orig_y),
+            (orig_x - line_length * math.sin(math.radians(angle+225)), orig_y + line_length * math.cos(math.radians(angle+225))),
+            # Right
+            (orig_x, orig_y),
+            (orig_x - line_length * math.sin(math.radians(angle+270)), orig_y + line_length * math.cos(math.radians(angle+270))),
+            # Front-right
+            (orig_x, orig_y),
+            (orig_x - line_length * math.sin(math.radians(angle+315)), orig_y + line_length * math.cos(math.radians(angle+315))),
+
+
+        )
+
+        # arcade.draw_line(
+        #     self.player_sprite.center_x,
+        #     self.player_sprite.center_y,
+        #     self.player_sprite.center_x - (800 * SPRITE_SCALING) * (math.sin(math.radians(self.player_sprite.angle))),
+        #     self.player_sprite.center_y + (800 * SPRITE_SCALING) * (math.cos(math.radians(self.player_sprite.angle))),
+        #     arcade.color.RED
+        # )
+        arcade.draw_lines(laser_lines, arcade.color.RED)
+
         # Display speed
-        arcade.draw_text(f"X Speed: {self.player_sprite.change_x:6.3f}", 10, 50, arcade.color.BLACK)
+        arcade.draw_text(f"X Speed: {self.player_sprite.change_x:6.3f}", 10, 90, arcade.color.BLACK)
         arcade.draw_text(f"Y Speed: {self.player_sprite.change_y:6.3f}", 10, 70, arcade.color.BLACK)
+        arcade.draw_text(f"Angle: {self.player_sprite.angle:6.3f}", 10, 50, arcade.color.BLACK)
+
 
     def on_update(self, delta_time: float):
         """Movement and game logic"""
@@ -176,13 +229,17 @@ class MyGame(arcade.Window):
             return
 
         if symbol == arcade.key.LEFT:
-            self.player_sprite.change_angle = 3
-        elif symbol == arcade.key.RIGHT:
-            self.player_sprite.change_angle = -3
-        elif symbol == arcade.key.UP:
+            self.player_sprite.change_angle = 5
+            self.left_pressed = True
+        if symbol == arcade.key.RIGHT:
+            self.player_sprite.change_angle = -5
+            self.right_pressed = True
+        if symbol == arcade.key.UP:
             self.player_sprite.thrust = 0.15
+            self.up_pressed = True
         elif symbol == arcade.key.DOWN:
             self.player_sprite.thrust = -.2
+            self.down_pressed = True
 
 
     def on_key_release(self, symbol: int, modifiers: int):
@@ -193,9 +250,9 @@ class MyGame(arcade.Window):
 
         if symbol == arcade.key.LEFT:
             self.player_sprite.change_angle = 0
-        elif symbol == arcade.key.RIGHT:
+        if symbol == arcade.key.RIGHT:
             self.player_sprite.change_angle = 0
-        elif symbol == arcade.key.UP:
+        if symbol == arcade.key.UP:
             self.player_sprite.thrust = 0
         elif symbol == arcade.key.DOWN:
             self.player_sprite.thrust = 0

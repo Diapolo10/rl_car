@@ -10,11 +10,11 @@ WINDOW_TITLE: str = "TurboRacer 9000"
 # Game
 FRAMERATE_CAP: int = 30
 NO_OF_ACTIONS: int = 9
-MAX_SPEED: float = 3.0
+MAX_SPEED: float = 3.5
 DRAG: float = 0.05
 ACCELERATION_RATE: float = 0.1
 FRICTION: float = 0.02
-SPRITE_SCALING: float = 1.0  # 1.0 means original size
+SPRITE_SCALING: float = 0.25  # 1.0 means original size
 
 # MODEL HYPERPARAMETERS
 

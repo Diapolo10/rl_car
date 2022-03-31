@@ -5,6 +5,8 @@ from pathlib import Path
 from typing import Optional, Union
 
 import arcade
+from PIL import Image  # type: ignore
+from shapely.geometry import LineString, Point  # type: ignore
 
 from config_file import (  # type: ignore
     WINDOW_WIDTH,
@@ -22,9 +24,11 @@ ROOT_DIR = Path(__file__).parent
 IMAGE_DIR = ROOT_DIR / 'images'
 CAR_SPRITE = IMAGE_DIR / 'car.png'
 # TRACK_SPRITE = IMAGE_DIR / 'track.png'
-# TRACK_TP_SPRITE = IMAGE_DIR / 'track_tp.png'
+TRACK_TP_SPRITE = IMAGE_DIR / 'track_tp.png'
 TRACK_BARE_SPRITE = IMAGE_DIR / 'track_bare.png'
 TRACK_BORDER_SPRITE = IMAGE_DIR / 'track_border.png'
+TRACK_BORDER_INNER_SPRITE = IMAGE_DIR / 'track_border_inner.png'
+TRACK_BORDER_OUTER_SPRITE = IMAGE_DIR / 'track_border_outer.png'
 
 FilePath = Union[str, Path]
 
@@ -109,6 +113,10 @@ class MyGame(arcade.Window):
         # Set up track info
         self.track_sprite: Optional[arcade.Sprite] = None
         self.track_border_sprite: Optional[arcade.Sprite] = None
+        self.track_border_inner_sprite: Optional[arcade.Sprite] = None
+        self.track_border_outer_sprite: Optional[arcade.Sprite] = None
+        self.track_inner_hitbox: arcade.PointList = []
+        self.track_outer_hitbox: arcade.PointList = []
 
         # Track the current state of what key is pressed
         self.left_pressed = False
@@ -144,6 +152,22 @@ class MyGame(arcade.Window):
             center_x=WINDOW_WIDTH//2,
             center_y=WINDOW_HEIGHT//2
         )
+        self.track_border_inner_sprite = arcade.Sprite(
+            TRACK_BORDER_INNER_SPRITE,
+            center_x=WINDOW_WIDTH//2,
+            center_y=WINDOW_HEIGHT//2
+        )
+        self.track_border_outer_sprite = arcade.Sprite(
+            TRACK_BORDER_OUTER_SPRITE,
+            center_x=WINDOW_WIDTH//2,
+            center_y=WINDOW_HEIGHT//2
+        )
+        # TODO: Cache hitboxes using sprite hashes to hasten load times
+        self.track_inner_hitbox = align_hitbox(hitbox_from_image(TRACK_BORDER_INNER_SPRITE))
+        self.track_outer_hitbox = align_hitbox(hitbox_from_image(TRACK_TP_SPRITE))
+        self.track_inner_linestring = LineString(self.track_inner_hitbox)
+        self.track_outer_linestring = LineString(self.track_outer_hitbox)
+
         self.track_list.extend((self.track_sprite, self.track_border_sprite))
 
 
@@ -156,6 +180,8 @@ class MyGame(arcade.Window):
         # Draw all the sprites.
         self.track_list.draw()
         self.player_list.draw()
+        # self.player_sprite.draw_hit_box()
+        # self.track_border_sprite.draw_hit_box()
 
         # Player origin
         orig_x = self.player_sprite.center_x
@@ -175,7 +201,38 @@ class MyGame(arcade.Window):
                 )
             )
 
+        ## OVER CONSTRUCTION ##
+
+        hitbox = LineString(self.track_inner_hitbox + self.track_outer_hitbox)
+
+        for a, b in zip(laser_lines[::2], laser_lines[1::2]):
+            line = LineString((a, b))
+            x, y = b[0], b[1]
+            colour = arcade.color.WHITE
+            if line.intersects(hitbox):
+                point = line.intersection(hitbox)
+                if isinstance(point, Point):
+                    x, y = point.x, point.y
+                elif isinstance(point, LineString):
+                    pass
+                # print(point)
+                # x, y = point[0], point[1]
+                colour = arcade.color.BLUE
+            # elif line.intersects(self.track_outer_linestring):
+            #     point = line.intersection(self.track_inner_linestring)
+            #     if isinstance(point, Point):
+            #         x, y = point.x, point.y
+            #     # print(point)
+            #     # x, y = point[0], point[1]
+            #     colour = arcade.color.BLUE
+
+            arcade.draw_circle_filled(x, y, radius=5, color=colour)
+
+        ## UNDER CONSTRUCTION ##
+
         arcade.draw_lines(laser_lines, arcade.color.RED)
+        arcade.draw_lines(self.track_inner_hitbox, arcade.color.YELLOW)
+        arcade.draw_lines(self.track_outer_hitbox, arcade.color.GREEN)
 
         # Display speed
         arcade.draw_text(f"X Speed: {self.player_sprite.change_x:6.3f}", 10, 90, arcade.color.BLACK)
@@ -251,6 +308,30 @@ class MyGame(arcade.Window):
             self.player_sprite.thrust = 0
         elif symbol == arcade.key.DOWN:
             self.player_sprite.thrust = 0
+
+
+def hitbox_from_image(image_path: FilePath, hit_box_detail: float = 4.5) -> arcade.PointList:
+    """Generates a valid hitbox from a given image file"""
+
+    with Image.open(image_path) as image:
+        hitbox = list(arcade.calculate_hit_box_points_detailed(image, hit_box_detail=hit_box_detail))
+
+    # Fills in the "doubles" needed by arcade.draw_lines in order to get full boundaries
+    # (otherwise it draws every other segment)
+    hitbox.extend(hitbox[:1])
+    for idx in range(len(hitbox)-3, 0, -1):
+        hitbox.insert(idx, hitbox[idx])
+    
+    return hitbox
+
+
+def align_hitbox(hitbox: arcade.PointList, x_orig=WINDOW_WIDTH//2, y_orig=WINDOW_HEIGHT//2) -> arcade.PointList:
+    """Aligns a hitbox to a new origo, defaulting to the centre of the window"""
+
+    return [
+        (x+x_orig, y+y_orig)
+        for x, y, *_ in hitbox
+    ]
 
 
 def main():

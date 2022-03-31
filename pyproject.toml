@@ -60,18 +60,19 @@ classifiers = [
 
 [tool.poetry.dependencies]
 python = '~3.8'
-arcade = '^2.6.7'
-numpy = '^1.18.5'
-tensorflow = '^2.3.4'
+arcade = '^2.6.13'
+numpy = '^1.22.3'
+shapely = '^1.8.1'
+tensorflow = '^2.8.0'
 
 
 [tool.poetry.dev-dependencies]
-coverage = {version = '^6.2', extras = ['toml',]}
+coverage = {version = '^6.3.2', extras = ['toml',]}
 flake8 = '^3.9.2'
 mypy = '^0.941'
-pylint = '^2.6.2'
-pyproject-flake8 = '^0.0.1a2'
-pytest = '^7.0.1'
+pylint = '^2.13.4'
+pyproject-flake8 = '^0.0.1a3'
+pytest = '^7.1.1'
 pytest-cov = '^3.0.0'
 tox = '^3.24.5'
 tox-gh-actions = '^2.9.1'

@@ -7,7 +7,7 @@ from typing import Optional, Union
 import arcade
 from PIL import Image  # type: ignore
 from shapely.geometry import LineString, Point, MultiPoint, MultiLineString  # type: ignore
-from shapely.ops import nearest_points
+from shapely.ops import nearest_points  # type: ignore
 
 from config_file import (  # type: ignore
     WINDOW_WIDTH,

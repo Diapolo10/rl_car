@@ -34,3 +34,53 @@ Stuff to-do:
 - Train NN
 - ???
 - Profit
+
+## Troubleshooting
+
+If you run into an `ImportError` message like this one
+
+```text
+Traceback (most recent call last):
+  File "d:/github/rl_car/rl_car/game.py", line 7, in <module>
+    import arcade
+  File "C:\Users\laril\AppData\Local\pypoetry\Cache\virtualenvs\rl-car-usInqqGI-py3.8\lib\site-packages\arcade\__init__.py", line 102, in <module>
+    from .camera import Camera
+  File "C:\Users\laril\AppData\Local\pypoetry\Cache\virtualenvs\rl-car-usInqqGI-py3.8\lib\site-packages\arcade\camera.py", line 7, in <module>
+    from pyglet.math import Mat4, Vec2, Vec3
+ImportError: cannot import name 'Vec2' from 'pyglet.math' (C:\Users\laril\AppData\Local\pypoetry\Cache\virtualenvs\rl-car-usInqqGI-py3.8\lib\site-packages\pyglet\math.py)
+```
+
+you'll want to run `pip install pyglet==2.0a2`. The problem is caused by current builds of Arcade using an alpha release of `pyglet` and Poetry prioritising version `2.0.dev12` over it. Personally I can't tell which party is at fault here.
+
+If you run into
+
+```text
+Traceback (most recent call last):
+  File "d:/github/rl_car/rl_car/game.py", line 351, in <module>
+    main()
+  File "d:/github/rl_car/rl_car/game.py", line 347, in main
+    arcade.run()
+  File "C:\Users\laril\AppData\Local\pypoetry\Cache\virtualenvs\rl-car-usInqqGI-py3.8\lib\site-packages\arcade\window_commands.py", line 323, in run
+    pyglet.app.run()
+  File "C:\Users\laril\AppData\Local\pypoetry\Cache\virtualenvs\rl-car-usInqqGI-py3.8\lib\site-packages\pyglet\app\__init__.py", line 107, in run
+    event_loop.run(interval)
+  File "C:\Users\laril\AppData\Local\pypoetry\Cache\virtualenvs\rl-car-usInqqGI-py3.8\lib\site-packages\pyglet\app\base.py", line 184, in run
+    timeout = self.idle()
+  File "C:\Users\laril\AppData\Local\pypoetry\Cache\virtualenvs\rl-car-usInqqGI-py3.8\lib\site-packages\pyglet\app\base.py", line 245, in idle
+    self.clock.call_scheduled_functions(dt)
+  File "C:\Users\laril\AppData\Local\pypoetry\Cache\virtualenvs\rl-car-usInqqGI-py3.8\lib\site-packages\pyglet\clock.py", line 277, in call_scheduled_functions
+    item.func(now - item.last_ts, *item.args, **item.kwargs)
+  File "C:\Users\laril\AppData\Local\pypoetry\Cache\virtualenvs\rl-car-usInqqGI-py3.8\lib\site-packages\pyglet\app\base.py", line 154, in _redraw_windows
+    window.dispatch_event('on_draw')
+  File "C:\Users\laril\AppData\Local\pypoetry\Cache\virtualenvs\rl-car-usInqqGI-py3.8\lib\site-packages\pyglet\window\__init__.py", line 1329, in dispatch_event
+    super().dispatch_event(*args)
+  File "C:\Users\laril\AppData\Local\pypoetry\Cache\virtualenvs\rl-car-usInqqGI-py3.8\lib\site-packages\pyglet\event.py", line 422, in dispatch_event
+    if getattr(self, event_type)(*args):
+  File "d:/github/rl_car/rl_car/game.py", line 221, in on_draw
+    dests = nearest_points(Point(orig_x, orig_y), points)
+  File "C:\Users\laril\AppData\Local\pypoetry\Cache\virtualenvs\rl-car-usInqqGI-py3.8\lib\site-packages\shapely\ops.py", line 333, in nearest_points
+    seq = lgeos.methods['nearest_points'](g1._geom, g2._geom)
+OSError: exception: access violation reading 0x0000000000000000
+```
+
+then comment out the line `dests = nearest_points(Point(orig_x, orig_y), points)` - it is currently unknown what's causing the problem here.

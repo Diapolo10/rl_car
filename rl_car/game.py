@@ -6,7 +6,8 @@ from typing import Optional, Union
 
 import arcade
 from PIL import Image  # type: ignore
-from shapely.geometry import LineString, Point  # type: ignore
+from shapely.geometry import LineString, Point, MultiPoint  # type: ignore
+from shapely.ops import nearest_points
 
 from config_file import (  # type: ignore
     WINDOW_WIDTH,
@@ -214,7 +215,11 @@ class MyGame(arcade.Window):
                 if isinstance(point, Point):
                     x, y = point.x, point.y
                 elif isinstance(point, LineString):
-                    pass
+                    (x, y), *_ = point.coords
+                elif isinstance(point, MultiPoint):
+                    points = point.geoms
+                    # dests = nearest_points(Point(orig_x, orig_y), points)
+                    x, y = points[0].x, points[0].y
                 # print(point)
                 # x, y = point[0], point[1]
                 colour = arcade.color.BLUE

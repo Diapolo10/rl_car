@@ -6,7 +6,7 @@ from typing import Optional, Union
 
 import arcade
 from PIL import Image  # type: ignore
-from shapely.geometry import LineString, Point, MultiPoint  # type: ignore
+from shapely.geometry import LineString, Point, MultiPoint, MultiLineString  # type: ignore
 from shapely.ops import nearest_points
 
 from config_file import (  # type: ignore
@@ -204,7 +204,12 @@ class MyGame(arcade.Window):
 
         ## OVER CONSTRUCTION ##
 
-        hitbox = LineString(self.track_inner_hitbox + self.track_outer_hitbox)
+        hitbox = MultiLineString(
+            (
+                LineString(self.track_inner_hitbox),
+                LineString(self.track_outer_hitbox)
+            )
+        )
 
         for a, b in zip(laser_lines[::2], laser_lines[1::2]):
             line = LineString((a, b))
@@ -220,7 +225,6 @@ class MyGame(arcade.Window):
                     points = point.geoms
                     # dests = nearest_points(Point(orig_x, orig_y), points)
                     x, y = points[0].x, points[0].y
-                # print(point)
                 # x, y = point[0], point[1]
                 colour = arcade.color.BLUE
             # elif line.intersects(self.track_outer_linestring):

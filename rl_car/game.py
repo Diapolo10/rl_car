@@ -24,7 +24,6 @@ from config_file import (  # type: ignore
 ROOT_DIR = Path(__file__).parent
 IMAGE_DIR = ROOT_DIR / 'images'
 CAR_SPRITE = IMAGE_DIR / 'car.png'
-# TRACK_SPRITE = IMAGE_DIR / 'track.png'
 TRACK_TP_SPRITE = IMAGE_DIR / 'track_tp.png'
 TRACK_BARE_SPRITE = IMAGE_DIR / 'track_bare.png'
 TRACK_BORDER_SPRITE = IMAGE_DIR / 'track_border.png'
@@ -118,6 +117,8 @@ class MyGame(arcade.Window):
         self.track_border_outer_sprite: Optional[arcade.Sprite] = None
         self.track_inner_hitbox: arcade.PointList = []
         self.track_outer_hitbox: arcade.PointList = []
+        self.track_inner_linestring: Optional[LineString] = None
+        self.track_outer_linestring: Optional[LineString] = None
 
         # Track the current state of what key is pressed
         self.left_pressed = False
@@ -202,8 +203,6 @@ class MyGame(arcade.Window):
                 )
             )
 
-        ## OVER CONSTRUCTION ##
-
         hitbox = MultiLineString(
             (
                 LineString(self.track_inner_hitbox),
@@ -211,33 +210,27 @@ class MyGame(arcade.Window):
             )
         )
 
-        for a, b in zip(laser_lines[::2], laser_lines[1::2]):
-            line = LineString((a, b))
-            x, y = b[0], b[1]
+        for start, stop in zip(laser_lines[::2], laser_lines[1::2]):
+
+            line = LineString((start, stop))
+            coord_x, coord_y = stop[0], stop[1]
             colour = arcade.color.WHITE
+
             if line.intersects(hitbox):
                 point = line.intersection(hitbox)
+
                 if isinstance(point, Point):
-                    x, y = point.x, point.y
+                    coord_x, coord_y = point.x, point.y
                 elif isinstance(point, LineString):
-                    (x, y), *_ = point.coords
+                    (coord_x, coord_y), *_ = point.coords
                 elif isinstance(point, MultiPoint):
                     points = point.geoms
                     # dests = nearest_points(Point(orig_x, orig_y), points)
-                    x, y = points[0].x, points[0].y
-                # x, y = point[0], point[1]
+                    coord_x, coord_y = points[0].x, points[0].y
+
                 colour = arcade.color.BLUE
-            # elif line.intersects(self.track_outer_linestring):
-            #     point = line.intersection(self.track_inner_linestring)
-            #     if isinstance(point, Point):
-            #         x, y = point.x, point.y
-            #     # print(point)
-            #     # x, y = point[0], point[1]
-            #     colour = arcade.color.BLUE
 
-            arcade.draw_circle_filled(x, y, radius=5, color=colour)
-
-        ## UNDER CONSTRUCTION ##
+            arcade.draw_circle_filled(coord_x, coord_y, radius=5, color=colour)
 
         arcade.draw_lines(laser_lines, arcade.color.RED)
         arcade.draw_lines(self.track_inner_hitbox, arcade.color.YELLOW)
@@ -330,7 +323,7 @@ def hitbox_from_image(image_path: FilePath, hit_box_detail: float = 4.5) -> arca
     hitbox.extend(hitbox[:1])
     for idx in range(len(hitbox)-3, 0, -1):
         hitbox.insert(idx, hitbox[idx])
-    
+
     return hitbox
 
 

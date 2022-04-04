@@ -50,7 +50,7 @@ Lorem Ipsum dolor sit amet.
 <!--
 _______________________________________________________________________________
 
-## [0.1.1] - YYYY-MM-DD
+## [0.1.2] - YYYY-MM-DD
 
 In-progress update goes here.
 
@@ -61,6 +61,35 @@ In-progress update goes here.
 ### Changed
 
 - Updated localisation files
+
+-->
+
+_______________________________________________________________________________
+
+## [0.2.0] - 2022-04-04
+
+This version adds a mostly-working simulation nearly ready for prime-time.
+The simulation includes a working vehicle, with laser sensors that track
+the walls of the road, and working physics.
+
+### Added
+
+- Player vehicle
+- Physics
+- Laser sensors
+- Track "hitboxes"
+- Visible intersection points for the lasers and hitboxes
+- Rudimentary displays for vehicle velocity and angle
+- Basic documentation for installing and running the project
+
+### Changed
+
+- Updated dependencies
+- Updated localisation files
+
+### Fixed
+
+- Linter complaints
 
 -->
 

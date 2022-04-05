@@ -4,7 +4,7 @@ Let's teach an AI to drive - using reinforcement learning.
 
 ## Development
 
-First, clone or download the repository to your device. Ensure that it has Python installed between versions 3.6 and 3.8. As of writing, the `keras` dependency doesn't work on Python 3.9 and above. The rest of the codebase expects at least 3.6.
+First, clone or download the repository to your device. Ensure that it has Python installed between versions 3.8 and above.
 
 1. If you do not have Poetry installed, run `pip install poetry`
 2. Navigate to the repository

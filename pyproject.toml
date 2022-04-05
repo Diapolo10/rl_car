@@ -47,24 +47,29 @@ keywords = [
 ]
 classifiers = [
     'Development Status :: 3 - Alpha',
+    'Intended Audience :: Education',
+    'Intended Audience :: Science/Research',
     'License :: OSI Approved :: MIT License',
     'Operating System :: OS Independent',
-    'Programming Language :: Python :: 3.6',
-    'Programming Language :: Python :: 3.7',
     'Programming Language :: Python :: 3.8',
     'Programming Language :: Python :: 3.9',
     'Programming Language :: Python :: 3.10',
     'Programming Language :: Python :: Implementation :: CPython',
+    'Programming Language :: Python :: Implementation :: PyPy',
+    'Topic :: Education',
+    'Topic :: Games/Entertainment :: Arcade',
+    'Topic :: Scientific/Engineering :: Artificial Intelligence',
+    'Topic :: Scientific/Engineering :: Visualization',
     'Typing :: Typed',
 ]
 
 
 [tool.poetry.dependencies]
-python = '~3.8'
+python = '^3.8'
 arcade = '^2.6.13'
 numpy = '^1.22.3'
 shapely = '^1.8.1'
-tensorflow = '^2.8.0'
+torch = '^1.11.0'
 
 
 [tool.poetry.dev-dependencies]
@@ -126,7 +131,7 @@ python =
     3.7: py37
     3.8: py38
     3.9: py39
-    pypy-3.7: pypy3
+    pypy-3.8: pypy3
 
 [gh-actions:env]
 PLATFORM =

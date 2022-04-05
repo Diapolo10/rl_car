@@ -6,7 +6,7 @@ from typing import Optional, Union
 
 import arcade
 from PIL import Image  # type: ignore
-from shapely.geometry import LineString, Point, MultiPoint, MultiLineString  # type: ignore
+from shapely.geometry import LineString, Point, MultiPoint, MultiLineString, LinearRing  # type: ignore
 from shapely.ops import nearest_points  # type: ignore
 
 from config_file import (  # type: ignore
@@ -24,9 +24,7 @@ from config_file import (  # type: ignore
 ROOT_DIR = Path(__file__).parent
 IMAGE_DIR = ROOT_DIR / 'images'
 CAR_SPRITE = IMAGE_DIR / 'car.png'
-TRACK_TP_SPRITE = IMAGE_DIR / 'track_tp.png'
 TRACK_BARE_SPRITE = IMAGE_DIR / 'track_bare.png'
-TRACK_BORDER_SPRITE = IMAGE_DIR / 'track_border.png'
 TRACK_BORDER_INNER_SPRITE = IMAGE_DIR / 'track_border_inner.png'
 TRACK_BORDER_OUTER_SPRITE = IMAGE_DIR / 'track_border_outer.png'
 
@@ -117,8 +115,8 @@ class MyGame(arcade.Window):
         self.track_border_outer_sprite: Optional[arcade.Sprite] = None
         self.track_inner_hitbox: arcade.PointList = []
         self.track_outer_hitbox: arcade.PointList = []
-        self.track_inner_linestring: Optional[LineString] = None
-        self.track_outer_linestring: Optional[LineString] = None
+        self.track_inner_linearring: Optional[LinearRing] = None
+        self.track_outer_linearring: Optional[LinearRing] = None
 
         # Track the current state of what key is pressed
         self.left_pressed = False
@@ -149,11 +147,6 @@ class MyGame(arcade.Window):
             center_x=WINDOW_WIDTH//2,
             center_y=WINDOW_HEIGHT//2
         )
-        self.track_border_sprite = arcade.Sprite(
-            TRACK_BORDER_SPRITE,
-            center_x=WINDOW_WIDTH//2,
-            center_y=WINDOW_HEIGHT//2
-        )
         self.track_border_inner_sprite = arcade.Sprite(
             TRACK_BORDER_INNER_SPRITE,
             center_x=WINDOW_WIDTH//2,
@@ -166,11 +159,17 @@ class MyGame(arcade.Window):
         )
         # TODO: Cache hitboxes using sprite hashes to hasten load times
         self.track_inner_hitbox = align_hitbox(hitbox_from_image(TRACK_BORDER_INNER_SPRITE))
-        self.track_outer_hitbox = align_hitbox(hitbox_from_image(TRACK_TP_SPRITE))
-        self.track_inner_linestring = LineString(self.track_inner_hitbox)
-        self.track_outer_linestring = LineString(self.track_outer_hitbox)
+        self.track_outer_hitbox = align_hitbox(hitbox_from_image(TRACK_BORDER_OUTER_SPRITE))
+        self.track_inner_linearring = LinearRing(self.track_inner_hitbox)
+        self.track_outer_linearring = LinearRing(self.track_outer_hitbox)
 
-        self.track_list.extend((self.track_sprite, self.track_border_sprite))
+        self.track_list.extend(
+            (
+                self.track_sprite,
+                self.track_border_inner_sprite,
+                self.track_border_outer_sprite
+            )
+        )
 
 
     def on_draw(self):
@@ -182,8 +181,6 @@ class MyGame(arcade.Window):
         # Draw all the sprites.
         self.track_list.draw()
         self.player_list.draw()
-        # self.player_sprite.draw_hit_box()
-        # self.track_border_sprite.draw_hit_box()
 
         # Player origin
         orig_x = self.player_sprite.center_x
@@ -205,8 +202,8 @@ class MyGame(arcade.Window):
 
         hitbox = MultiLineString(
             (
-                LineString(self.track_inner_hitbox),
-                LineString(self.track_outer_hitbox)
+                self.track_inner_linearring,
+                self.track_outer_linearring
             )
         )
 

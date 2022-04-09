@@ -19,6 +19,7 @@ from config_file import (  # type: ignore
     SPRITE_SCALING,
     LASER_SCALED_LENGTH,
     LASER_ANGLE,
+    FRAMERATE_CAP,
 )
 
 ROOT_DIR = Path(__file__).parent
@@ -99,7 +100,7 @@ class MyGame(arcade.Window):
     def __init__(self, width: int, height: int, title: str):
         """Initialiser"""
 
-        super().__init__(width, height, title, vsync=True)
+        super().__init__(width, height, title, update_rate=1/FRAMERATE_CAP, vsync=True)
 
         # Variables that will hold sprite lists
         self.player_list: Optional[arcade.SpriteList] = None

@@ -16,7 +16,7 @@ FRICTION: float = 0.25
 SPRITE_SCALING: float = 0.4  # 1.0 means original size
 
 # Data
-LASER_LENGTH: int = 800
+LASER_LENGTH: int = 400
 LASER_SCALED_LENGTH: float = LASER_LENGTH * SPRITE_SCALING
 LASER_COUNT: int = 12  # Valid values must divide 360 evenly; 1, 2, 3, 4, 5, 6, 8, 9, 10, 12, ...
 LASER_ANGLE: int = 360 // LASER_COUNT

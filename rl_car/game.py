@@ -226,7 +226,7 @@ class MyGame(arcade.Window):
                     # dests = nearest_points(Point(orig_x, orig_y), points)
                     coord_x, coord_y = points[0].x, points[0].y
 
-                colour = arcade.color.BLUE
+                colour = arcade.color.GOLD
 
             arcade.draw_circle_filled(coord_x, coord_y, radius=5, color=colour)
 

@@ -28,7 +28,7 @@ from config_file import (  # type: ignore
 
 ROOT_DIR = Path(__file__).parent
 IMAGE_DIR = ROOT_DIR / 'images'
-CAR_SPRITE = IMAGE_DIR / 'car.png'
+CAR_SPRITE = IMAGE_DIR / 'car1.png'
 TRACK_BARE_SPRITE = IMAGE_DIR / 'track_bare.png'
 TRACK_BORDER_INNER_SPRITE = IMAGE_DIR / 'track_border_inner.png'
 TRACK_BORDER_OUTER_SPRITE = IMAGE_DIR / 'track_border_outer.png'
@@ -79,7 +79,7 @@ class MyGame(arcade.Window):
 
         # Set up the player
         self.player_sprite = Player(CAR_SPRITE, SPRITE_SCALING)
-        self.player_sprite.center_x = WINDOW_WIDTH // 7  # 50
+        self.player_sprite.center_x = WINDOW_WIDTH // 5  # 50
         self.player_sprite.center_y = WINDOW_HEIGHT // 2  # 50
         self.player_list.append(self.player_sprite)
 

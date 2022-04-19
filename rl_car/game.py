@@ -5,10 +5,14 @@ from pathlib import Path
 from typing import Optional, Union
 
 import arcade
-from PIL import Image  # type: ignore
 from shapely.geometry import LineString, Point, MultiPoint, MultiLineString, LinearRing  # type: ignore
 from shapely.ops import nearest_points  # type: ignore
 
+from car import Player
+from track import (
+    hitbox_from_image,
+    align_hitbox
+)
 from config_file import (  # type: ignore
     WINDOW_WIDTH,
     WINDOW_HEIGHT,
@@ -30,69 +34,6 @@ TRACK_BORDER_INNER_SPRITE = IMAGE_DIR / 'track_border_inner.png'
 TRACK_BORDER_OUTER_SPRITE = IMAGE_DIR / 'track_border_outer.png'
 
 FilePath = Union[str, Path]
-
-
-class Player(arcade.Sprite):
-    """ Player class """
-
-    def __init__(self, filename: FilePath, scale: float, angle=0):
-        """Set up the car"""
-
-        # Call the parent Sprite constructor
-        super().__init__(str(filename), scale, angle)
-
-        # Info on where we are going.
-        # Angle comes automatically from the parent class.
-        self.thrust: float = 0
-        self.speed: float = 0
-        self.max_speed: float = MAX_SPEED
-        self.drag: float = DRAG
-
-
-    def update(self):
-        """Update position"""
-
-        if self.speed > 0:
-            self.speed = max(self.speed-self.drag, 0)
-
-        if self.speed < 0:
-            self.speed = min(self.speed+self.drag, 0)
-
-        self.speed += self.thrust
-        if self.speed > self.max_speed:
-            self.speed = self.max_speed
-        if self.speed < -self.max_speed:
-            self.speed = -self.max_speed
-
-        self.change_x = -math.sin(math.radians(self.angle)) * self.speed
-        self.change_y = math.cos(math.radians(self.angle)) * self.speed
-
-        self.center_x += self.change_x
-        self.center_y += self.change_y
-
-        # Check to see if we hit the screen edge
-        if self.left < 0:
-            self.left = 0
-
-            self.change_x = 0  # Zero x speed
-
-        elif self.right > WINDOW_WIDTH - 1:
-            self.right = WINDOW_WIDTH - 1
-
-            self.change_x = 0
-
-        if self.bottom < 0:
-            self.bottom = 0
-
-            self.change_y = 0
-
-        elif self.top > WINDOW_HEIGHT - 1:
-            self.top = WINDOW_HEIGHT - 1
-
-            self.change_y = 0
-
-        super().update()
-
 
 class MyGame(arcade.Window):
     """Main application class"""
@@ -308,30 +249,6 @@ class MyGame(arcade.Window):
             self.player_sprite.thrust = 0
         elif symbol == arcade.key.DOWN:
             self.player_sprite.thrust = 0
-
-
-def hitbox_from_image(image_path: FilePath, hit_box_detail: float = 4.5) -> arcade.PointList:
-    """Generates a valid hitbox from a given image file"""
-
-    with Image.open(image_path) as image:
-        hitbox = list(arcade.calculate_hit_box_points_detailed(image, hit_box_detail=hit_box_detail))
-
-    # Fills in the "doubles" needed by arcade.draw_lines in order to get full boundaries
-    # (otherwise it draws every other segment)
-    hitbox.extend(hitbox[:1])
-    for idx in range(len(hitbox)-3, 0, -1):
-        hitbox.insert(idx, hitbox[idx])
-
-    return hitbox
-
-
-def align_hitbox(hitbox: arcade.PointList, x_orig=WINDOW_WIDTH//2, y_orig=WINDOW_HEIGHT//2) -> arcade.PointList:
-    """Aligns a hitbox to a new origo, defaulting to the centre of the window"""
-
-    return [
-        (x+x_orig, y+y_orig)
-        for x, y, *_ in hitbox
-    ]
 
 
 def main():

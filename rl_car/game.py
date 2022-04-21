@@ -13,6 +13,11 @@ from track import (
     hitbox_from_image,
     align_hitbox
 )
+from caching import (
+    getHitboxFromCache,
+    addHitboxToCache
+)
+
 from config_file import (  # type: ignore
     WINDOW_WIDTH,
     WINDOW_HEIGHT,
@@ -99,11 +104,23 @@ class MyGame(arcade.Window):
             center_x=WINDOW_WIDTH//2,
             center_y=WINDOW_HEIGHT//2
         )
-        # TODO: Cache hitboxes using sprite hashes to hasten load times
-        self.track_inner_hitbox = align_hitbox(hitbox_from_image(TRACK_BORDER_INNER_SPRITE))
-        self.track_outer_hitbox = align_hitbox(hitbox_from_image(TRACK_BORDER_OUTER_SPRITE))
+
+        self.track_inner_hitbox = getHitboxFromCache(TRACK_BORDER_INNER_SPRITE)
+        self.track_outer_hitbox = getHitboxFromCache(TRACK_BORDER_OUTER_SPRITE)
+
+        # If getHitboxFromCache returns null, generate hitbox and add it to cache
+        if self.track_inner_hitbox is None:
+            self.track_inner_hitbox = align_hitbox(hitbox_from_image(TRACK_BORDER_INNER_SPRITE))
+            addHitboxToCache(TRACK_BORDER_INNER_SPRITE, self.track_inner_hitbox)
+
+        if self.track_outer_hitbox is None:
+            self.track_outer_hitbox = align_hitbox(hitbox_from_image(TRACK_BORDER_OUTER_SPRITE))
+            addHitboxToCache(TRACK_BORDER_OUTER_SPRITE, self.track_outer_hitbox)
+
         self.track_inner_linearring = LinearRing(self.track_inner_hitbox)
         self.track_outer_linearring = LinearRing(self.track_outer_hitbox)
+
+        
 
         self.track_list.extend(
             (

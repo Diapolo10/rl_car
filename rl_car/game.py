@@ -14,7 +14,7 @@ from track import (  # type: ignore
     align_hitbox
 )
 from caching import (  # type: ignore
-    getHitboxFromCache,
+    get_hitbox_from_cache,
     addHitboxToCache
 )
 
@@ -111,8 +111,8 @@ class MyGame(arcade.Window):
             center_y=WINDOW_HEIGHT//2
         )
 
-        self.track_inner_hitbox = getHitboxFromCache(TRACK_BORDER_INNER_SPRITE)
-        self.track_outer_hitbox = getHitboxFromCache(TRACK_BORDER_OUTER_SPRITE)
+        self.track_inner_hitbox = get_hitbox_from_cache(TRACK_BORDER_INNER_SPRITE)
+        self.track_outer_hitbox = get_hitbox_from_cache(TRACK_BORDER_OUTER_SPRITE)
 
         # Set up data for NN
         self.player_position: Optional[arcade.Point] = (
@@ -122,15 +122,6 @@ class MyGame(arcade.Window):
         self.player_velocity: Optional[float] = self.player_list[0].velocity
         self.player_angle: Optional[float] = self.player_list[0].angle
         self.line_collision_points: arcade.PointList = []
-
-        # If getHitboxFromCache returns null, generate hitbox and add it to cache
-        if self.track_inner_hitbox is None:
-            self.track_inner_hitbox = align_hitbox(hitbox_from_image(TRACK_BORDER_INNER_SPRITE))
-            addHitboxToCache(TRACK_BORDER_INNER_SPRITE, self.track_inner_hitbox)
-
-        if self.track_outer_hitbox is None:
-            self.track_outer_hitbox = align_hitbox(hitbox_from_image(TRACK_BORDER_OUTER_SPRITE))
-            addHitboxToCache(TRACK_BORDER_OUTER_SPRITE, self.track_outer_hitbox)
 
         self.track_inner_linearring = LinearRing(self.track_inner_hitbox)
         self.track_outer_linearring = LinearRing(self.track_outer_hitbox)

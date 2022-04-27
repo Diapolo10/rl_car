@@ -14,8 +14,7 @@ from track import (  # type: ignore
     align_hitbox
 )
 from caching import (  # type: ignore
-    get_hitbox_from_cache,
-    addHitboxToCache
+    get_hitbox_from_cache
 )
 
 from config_file import (  # type: ignore

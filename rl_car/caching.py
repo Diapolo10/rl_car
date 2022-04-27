@@ -32,13 +32,11 @@ def get_hitbox_from_cache(image_file: FilePath) -> PointList:
     else:
         hitbox = cache[image_hash]
         status = "Hitbox data fetched from cache."
-        
-    
+
     print(status)  # TODO: Use logging instead
     
     return hitbox
-             
-
+     
 
 def add_hitbox_to_cache(image_file: FilePath, hitbox: PointList, image_hash: Optional[str] = None):
     """Add hitbox for a image file to the cache"""
@@ -54,7 +52,7 @@ def add_hitbox_to_cache(image_file: FilePath, hitbox: PointList, image_hash: Opt
 
     try:
         CACHE_FILE.write_text(json.dumps(cache))
-    except TypeError:
-        status = "Failed to add JSON-incompatible type to cache, check hitbox data"
-    
+    except TypeError as err:
+        status = f"Failed to add JSON-incompatible type to cache, check hitbox data --\n{err}"
+
     print(status)  # TODO: Use logging instead

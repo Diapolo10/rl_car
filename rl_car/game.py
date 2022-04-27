@@ -8,12 +8,12 @@ import arcade
 from shapely.geometry import LineString, Point, MultiPoint, MultiLineString, LinearRing  # type: ignore
 from shapely.ops import nearest_points  # type: ignore
 
-from car import Player
-from track import (
+from car import Player  # type: ignore
+from track import (  # type: ignore
     hitbox_from_image,
     align_hitbox
 )
-from caching import (
+from caching import (  # type: ignore
     getHitboxFromCache,
     addHitboxToCache
 )
@@ -65,6 +65,12 @@ class MyGame(arcade.Window):
         self.track_inner_linearring: Optional[LinearRing] = None
         self.track_outer_linearring: Optional[LinearRing] = None
 
+        # Set up data for NN
+        self.player_position: Optional[arcade.Point] = None
+        self.player_velocity: Optional[float] = None
+        self.player_angle: Optional[float] = None
+        self.line_collision_points: arcade.PointList = []
+
         # Track the current state of what key is pressed
         self.left_pressed = False
         self.right_pressed = False
@@ -108,6 +114,15 @@ class MyGame(arcade.Window):
         self.track_inner_hitbox = getHitboxFromCache(TRACK_BORDER_INNER_SPRITE)
         self.track_outer_hitbox = getHitboxFromCache(TRACK_BORDER_OUTER_SPRITE)
 
+        # Set up data for NN
+        self.player_position: Optional[arcade.Point] = (
+            self.player_list[0].center_x,
+            self.player_list[0].center_y
+        )
+        self.player_velocity: Optional[float] = self.player_list[0].velocity
+        self.player_angle: Optional[float] = self.player_list[0].angle
+        self.line_collision_points: arcade.PointList = []
+
         # If getHitboxFromCache returns null, generate hitbox and add it to cache
         if self.track_inner_hitbox is None:
             self.track_inner_hitbox = align_hitbox(hitbox_from_image(TRACK_BORDER_INNER_SPRITE))
@@ -148,7 +163,7 @@ class MyGame(arcade.Window):
         line_length = LASER_SCALED_LENGTH
 
         laser_lines: arcade.PointList = []
-        # line_collision_points: arcade.PointList = []
+        self.line_collision_points: arcade.PointList = []
 
         for offset in range(0, 360, LASER_ANGLE):
             laser_lines.append((orig_x, orig_y))
@@ -184,6 +199,7 @@ class MyGame(arcade.Window):
                     # dests = nearest_points(Point(orig_x, orig_y), points)
                     coord_x, coord_y = points[0].x, points[0].y
 
+                self.line_collision_points.append((coord_x, coord_y))
                 colour = arcade.color.GOLD
 
             arcade.draw_circle_filled(coord_x, coord_y, radius=5, color=colour)

@@ -6,7 +6,6 @@ from collections import namedtuple, deque
 from itertools import count
 from typing import Deque
 
-import gym
 import numpy as np
 import torch
 import torch.nn as nn
@@ -21,9 +20,9 @@ from config_file import (
     MODEL_EXPLORE_START,
     MODEL_EXPLORE_STOP,
     MODEL_DECAY_RATE,
+    STATE_SIZE,
 )
-
-env = gym.make('Driving-v0').unwrapped
+from game import MyGame
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
@@ -46,3 +45,28 @@ class ReplayMemory:
 
     def __len__(self):
         return len(self.memory)
+
+
+class DDDQNetwork(nn.Module):
+    def __init__(self, state_size, action_size, learning_rate, name):
+        super().__init__()
+        self.state_size = state_size
+        self.action_size = action_size
+        self.learning_rate = learning_rate
+        self.name = name
+
+        self.dense1 = nn.Linear(
+            in_features=self.state_size,
+            out_features=256,
+            bias=True,
+            device=None,
+            dtype=torch.float32
+        )
+
+        self.dense2 = nn.Linear(
+            in_features=self.dense1,
+            out_features=256,
+            bias=True,
+            device=None,
+            dtype=torch.float32
+        )

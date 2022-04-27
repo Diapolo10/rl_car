@@ -143,3 +143,4 @@ tests/reports
 .install.stamp
 
 rl_car/example
+cache.json

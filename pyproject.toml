@@ -70,8 +70,7 @@ arcade = '^2.6.13'
 numpy = '^1.22.3'
 shapely = '^1.8.1'
 torch = '^1.11.0'
-gym = "^0.23.1"
-tensorflow = "^2.8.0"
+tensorflow = '^2.8.0'
 
 
 [tool.poetry.dev-dependencies]
@@ -124,13 +123,11 @@ testpaths = [
 [tool.tox]
 legacy_tox_ini = """
 [tox]
-envlist = py36, py37, py38, py39, pypy3
+envlist = py38, py39, pypy3
 isolated_build = True
 
 [gh-actions]
 python =
-    3.6: py36
-    3.7: py37
     3.8: py38
     3.9: py39
     pypy-3.8: pypy3
@@ -148,7 +145,6 @@ deps =
     coveralls[toml]
     pytest
     pytest-cov
-    wheel
 commands =
     coverage run -m pytest
 """

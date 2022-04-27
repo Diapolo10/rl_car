@@ -1,0 +1,60 @@
+TensorFlow 2.0 Upgrade Script
+-----------------------------
+Converted 1 files
+Detected 2 issues that require attention
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+File: ./rl_car/main_tf.py
+--------------------------------------------------------------------------------
+./rl_car/main_tf.py:682:28: WARNING: *.save requires manual check. (This warning is only applicable if the code saves a tf.Keras model) Keras model.save now saves to the Tensorflow SavedModel format by default, instead of HDF5. To continue saving to HDF5, add the argument save_format='h5' to the save() function.
+./rl_car/main_tf.py:687:28: WARNING: *.save requires manual check. (This warning is only applicable if the code saves a tf.Keras model) Keras model.save now saves to the Tensorflow SavedModel format by default, instead of HDF5. To continue saving to HDF5, add the argument save_format='h5' to the save() function.
+================================================================================
+Detailed log follows:
+
+================================================================================
+--------------------------------------------------------------------------------
+Processing file './rl_car/main_tf.py'
+ outputting to './rl_car/main_tf2.py'
+--------------------------------------------------------------------------------
+
+32:13: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+36:27: INFO: Renamed 'tf.placeholder' to 'tf.compat.v1.placeholder'
+39:30: INFO: Renamed 'tf.placeholder' to 'tf.compat.v1.placeholder'
+41:28: INFO: Renamed 'tf.placeholder' to 'tf.compat.v1.placeholder'
+44:28: INFO: Renamed 'tf.placeholder' to 'tf.compat.v1.placeholder'
+46:26: INFO: Renamed 'tf.layers.dense' to 'tf.compat.v1.layers.dense'
+49:61: INFO: Changing tf.contrib.layers xavier initializer to a tf.compat.v1.keras.initializers.VarianceScaling and converting arguments.
+
+52:26: INFO: Renamed 'tf.layers.dense' to 'tf.compat.v1.layers.dense'
+55:61: INFO: Changing tf.contrib.layers xavier initializer to a tf.compat.v1.keras.initializers.VarianceScaling and converting arguments.
+
+60:28: INFO: Renamed 'tf.layers.dense' to 'tf.compat.v1.layers.dense'
+63:63: INFO: Changing tf.contrib.layers xavier initializer to a tf.compat.v1.keras.initializers.VarianceScaling and converting arguments.
+
+66:25: INFO: Renamed 'tf.layers.dense' to 'tf.compat.v1.layers.dense'
+69:60: INFO: Changing tf.contrib.layers xavier initializer to a tf.compat.v1.keras.initializers.VarianceScaling and converting arguments.
+
+73:32: INFO: Renamed 'tf.layers.dense' to 'tf.compat.v1.layers.dense'
+76:67: INFO: Changing tf.contrib.layers xavier initializer to a tf.compat.v1.keras.initializers.VarianceScaling and converting arguments.
+
+79:29: INFO: Renamed 'tf.layers.dense' to 'tf.compat.v1.layers.dense'
+82:64: INFO: Changing tf.contrib.layers xavier initializer to a tf.compat.v1.keras.initializers.VarianceScaling and converting arguments.
+
+88:51: INFO: Added keywords to args of function 'tf.reduce_mean'
+91:21: INFO: Added keywords to args of function 'tf.reduce_sum'
+96:24: INFO: Added keywords to args of function 'tf.reduce_mean'
+96:57: INFO: Renamed 'tf.squared_difference' to 'tf.math.squared_difference'
+98:29: INFO: Renamed 'tf.train.RMSPropOptimizer' to 'tf.compat.v1.train.RMSPropOptimizer'
+102:0: INFO: Renamed 'tf.reset_default_graph' to 'tf.compat.v1.reset_default_graph'
+439:16: INFO: Renamed 'tf.get_collection' to 'tf.compat.v1.get_collection'
+439:34: INFO: Renamed 'tf.GraphKeys' to 'tf.compat.v1.GraphKeys'
+442:14: INFO: Renamed 'tf.get_collection' to 'tf.compat.v1.get_collection'
+442:32: INFO: Renamed 'tf.GraphKeys' to 'tf.compat.v1.GraphKeys'
+452:8: INFO: Renamed 'tf.train.Saver' to 'tf.compat.v1.train.Saver'
+465:20: INFO: Renamed 'tf.Session' to 'tf.compat.v1.Session'
+518:9: INFO: Renamed 'tf.Session' to 'tf.compat.v1.Session'
+525:21: INFO: Renamed 'tf.global_variables_initializer' to 'tf.compat.v1.global_variables_initializer'
+682:28: WARNING: *.save requires manual check. (This warning is only applicable if the code saves a tf.Keras model) Keras model.save now saves to the Tensorflow SavedModel format by default, instead of HDF5. To continue saving to HDF5, add the argument save_format='h5' to the save() function.
+687:28: WARNING: *.save requires manual check. (This warning is only applicable if the code saves a tf.Keras model) Keras model.save now saves to the Tensorflow SavedModel format by default, instead of HDF5. To continue saving to HDF5, add the argument save_format='h5' to the save() function.
+--------------------------------------------------------------------------------
+

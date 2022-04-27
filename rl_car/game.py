@@ -92,6 +92,7 @@ class MyGame(arcade.Window):
         self.player_sprite.center_x = WINDOW_WIDTH // 5  # 50
         self.player_sprite.center_y = WINDOW_HEIGHT // 2  # 50
         self.player_list.append(self.player_sprite)
+        self.player_alive: bool = True
 
         # Set up the track
         self.track_sprite = arcade.Sprite(
@@ -125,8 +126,6 @@ class MyGame(arcade.Window):
         self.track_inner_linearring = LinearRing(self.track_inner_hitbox)
         self.track_outer_linearring = LinearRing(self.track_outer_hitbox)
 
-        
-
         self.track_list.extend(
             (
                 self.track_sprite,
@@ -134,6 +133,15 @@ class MyGame(arcade.Window):
                 self.track_border_outer_sprite
             )
         )
+    
+
+    def get_state(self):  # TODO: Move data collecting to the car class
+        return [
+            *self.line_collision_points,
+            self.player_velocity,
+            self.player_angle,
+            self.player_position
+        ]
 
 
     def on_draw(self):

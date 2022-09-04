@@ -24,6 +24,10 @@ per-file-ignores = """\
 __init__.py:F401,F403,F405 \
 game.py:F401 \
 """
+exclude = [
+    'example',
+    'main_tf2.py',
+]
 
 
 [tool.poetry]
@@ -47,23 +51,29 @@ keywords = [
 ]
 classifiers = [
     'Development Status :: 3 - Alpha',
+    'Intended Audience :: Education',
+    'Intended Audience :: Science/Research',
     'License :: OSI Approved :: MIT License',
     'Operating System :: OS Independent',
-    'Programming Language :: Python :: 3.6',
-    'Programming Language :: Python :: 3.7',
     'Programming Language :: Python :: 3.8',
     'Programming Language :: Python :: 3.9',
     'Programming Language :: Python :: 3.10',
     'Programming Language :: Python :: Implementation :: CPython',
+    'Programming Language :: Python :: Implementation :: PyPy',
+    'Topic :: Education',
+    'Topic :: Games/Entertainment :: Arcade',
+    'Topic :: Scientific/Engineering :: Artificial Intelligence',
+    'Topic :: Scientific/Engineering :: Visualization',
     'Typing :: Typed',
 ]
 
 
 [tool.poetry.dependencies]
-python = '~3.8'
+python = '^3.8,<3.11'
 arcade = '^2.6.13'
 numpy = '^1.22.3'
 shapely = '^1.8.1'
+torch = '^1.11.0'
 tensorflow = '^2.8.0'
 
 
@@ -99,6 +109,13 @@ disable = [
 ]
 
 
+[tool.pylint.'MASTER']
+ignore-patterns = [
+    '.*main_tf2.py',
+    '.*example',
+]
+
+
 [tool.pytest.ini_options]
 minversion = "6.0"
 addopts = """
@@ -117,16 +134,14 @@ testpaths = [
 [tool.tox]
 legacy_tox_ini = """
 [tox]
-envlist = py36, py37, py38, py39, pypy3
+envlist = py38, py39, pypy3
 isolated_build = True
 
 [gh-actions]
 python =
-    3.6: py36
-    3.7: py37
     3.8: py38
     3.9: py39
-    pypy-3.7: pypy3
+    pypy-3.8: pypy3
 
 [gh-actions:env]
 PLATFORM =
@@ -141,7 +156,6 @@ deps =
     coveralls[toml]
     pytest
     pytest-cov
-    wheel
 commands =
     coverage run -m pytest
 """

@@ -8,16 +8,15 @@ WINDOW_WIDTH: int = 1800
 WINDOW_TITLE: str = "TurboRacer 9000"
 
 # Game
-FRAMERATE_CAP: int = 30
-NO_OF_ACTIONS: int = 9
-MAX_SPEED: float = 3.5
-DRAG: float = 0.05
-ACCELERATION_RATE: float = 0.04
-FRICTION: float = 0.02
-SPRITE_SCALING: float = 0.25  # 1.0 means original size
+FRAMERATE_CAP: int = 60
+MAX_SPEED: float = 3.0
+DRAG: float = 0.045
+ACCELERATION_RATE: float = 0.005
+FRICTION: float = 0.25
+SPRITE_SCALING: float = 0.4  # 1.0 means original size
 
 # Data
-LASER_LENGTH: int = 800
+LASER_LENGTH: int = 400
 LASER_SCALED_LENGTH: float = LASER_LENGTH * SPRITE_SCALING
 LASER_COUNT: int = 12  # Valid values must divide 360 evenly; 1, 2, 3, 4, 5, 6, 8, 9, 10, 12, ...
 LASER_ANGLE: int = 360 // LASER_COUNT
@@ -26,7 +25,7 @@ LASER_ANGLE: int = 360 // LASER_COUNT
 
 # Our input is a stack of 4 frames hence 100x120x4 (Width, height, channels)
 STATE_SIZE: List[int] = [15]
-ACTION_SIZE: int = NO_OF_ACTIONS      # 7 possible actions
+ACTION_SIZE: int = 7                  # 7 possible actions
 MODEL_LEARNING_RATE: float = 0.00025  # Alpha (aka learning rate)
 
 # TRAINING HYPERPARAMETERS

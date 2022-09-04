@@ -5,9 +5,17 @@ from pathlib import Path
 from typing import Optional, Union
 
 import arcade
-from PIL import Image  # type: ignore
-from shapely.geometry import LineString, Point, MultiPoint, MultiLineString  # type: ignore
+from shapely.geometry import LineString, Point, MultiPoint, MultiLineString, LinearRing  # type: ignore
 from shapely.ops import nearest_points  # type: ignore
+
+from car import Player  # type: ignore
+from track import (  # type: ignore
+    hitbox_from_image,
+    align_hitbox
+)
+from caching import (  # type: ignore
+    get_hitbox_from_cache
+)
 
 from config_file import (  # type: ignore
     WINDOW_WIDTH,
@@ -19,80 +27,17 @@ from config_file import (  # type: ignore
     SPRITE_SCALING,
     LASER_SCALED_LENGTH,
     LASER_ANGLE,
+    FRAMERATE_CAP,
 )
 
 ROOT_DIR = Path(__file__).parent
 IMAGE_DIR = ROOT_DIR / 'images'
-CAR_SPRITE = IMAGE_DIR / 'car.png'
-TRACK_TP_SPRITE = IMAGE_DIR / 'track_tp.png'
+CAR_SPRITE = IMAGE_DIR / 'car1.png'
 TRACK_BARE_SPRITE = IMAGE_DIR / 'track_bare.png'
-TRACK_BORDER_SPRITE = IMAGE_DIR / 'track_border.png'
 TRACK_BORDER_INNER_SPRITE = IMAGE_DIR / 'track_border_inner.png'
 TRACK_BORDER_OUTER_SPRITE = IMAGE_DIR / 'track_border_outer.png'
 
 FilePath = Union[str, Path]
-
-
-class Player(arcade.Sprite):
-    """ Player class """
-
-    def __init__(self, filename: FilePath, scale: float, angle=0):
-        """Set up the car"""
-
-        # Call the parent Sprite constructor
-        super().__init__(str(filename), scale, angle)
-
-        # Info on where we are going.
-        # Angle comes automatically from the parent class.
-        self.thrust: float = 0
-        self.speed: float = 0
-        self.max_speed: float = MAX_SPEED
-        self.drag: float = DRAG
-
-
-    def update(self):
-        """Update position"""
-
-        if self.speed > 0:
-            self.speed = max(self.speed-self.drag, 0)
-
-        if self.speed < 0:
-            self.speed = min(self.speed+self.drag, 0)
-
-        self.speed += self.thrust
-        if self.speed > self.max_speed:
-            self.speed = self.max_speed
-        if self.speed < -self.max_speed:
-            self.speed = -self.max_speed
-
-        self.change_x = -math.sin(math.radians(self.angle)) * self.speed
-        self.change_y = math.cos(math.radians(self.angle)) * self.speed
-
-        self.center_x += self.change_x
-        self.center_y += self.change_y
-
-        # Check to see if we hit the screen edge
-        if self.left < 0:
-            self.left = 0
-
-            self.change_x = 0  # Zero x speed
-
-        elif self.right > WINDOW_WIDTH - 1:
-            self.right = WINDOW_WIDTH - 1
-
-            self.change_x = 0
-
-        if self.bottom < 0:
-            self.bottom = 0
-
-            self.change_y = 0
-
-        elif self.top > WINDOW_HEIGHT - 1:
-            self.top = WINDOW_HEIGHT - 1
-
-            self.change_y = 0
-
-        super().update()
 
 
 class MyGame(arcade.Window):
@@ -101,11 +46,12 @@ class MyGame(arcade.Window):
     def __init__(self, width: int, height: int, title: str):
         """Initialiser"""
 
-        super().__init__(width, height, title, vsync=True)
+        super().__init__(width, height, title, update_rate=1/FRAMERATE_CAP, vsync=True)
 
         # Variables that will hold sprite lists
         self.player_list: Optional[arcade.SpriteList] = None
         self.track_list: Optional[arcade.SpriteList] = None
+        self.player_alive = None
 
         # Set up the player info
         self.player_sprite: Optional[Player] = None
@@ -117,8 +63,14 @@ class MyGame(arcade.Window):
         self.track_border_outer_sprite: Optional[arcade.Sprite] = None
         self.track_inner_hitbox: arcade.PointList = []
         self.track_outer_hitbox: arcade.PointList = []
-        self.track_inner_linestring: Optional[LineString] = None
-        self.track_outer_linestring: Optional[LineString] = None
+        self.track_inner_linearring: Optional[LinearRing] = None
+        self.track_outer_linearring: Optional[LinearRing] = None
+
+        # Set up data for NN
+        self.player_position: Optional[arcade.Point] = None
+        self.player_velocity: Optional[float] = None
+        self.player_angle: Optional[float] = None
+        self.line_collision_points: arcade.PointList = []
 
         # Track the current state of what key is pressed
         self.left_pressed = False
@@ -139,18 +91,14 @@ class MyGame(arcade.Window):
 
         # Set up the player
         self.player_sprite = Player(CAR_SPRITE, SPRITE_SCALING)
-        self.player_sprite.center_x = WINDOW_WIDTH // 7  # 50
+        self.player_sprite.center_x = WINDOW_WIDTH // 5  # 50
         self.player_sprite.center_y = WINDOW_HEIGHT // 2  # 50
         self.player_list.append(self.player_sprite)
+        self.player_alive: bool = True
 
         # Set up the track
         self.track_sprite = arcade.Sprite(
             TRACK_BARE_SPRITE,
-            center_x=WINDOW_WIDTH//2,
-            center_y=WINDOW_HEIGHT//2
-        )
-        self.track_border_sprite = arcade.Sprite(
-            TRACK_BORDER_SPRITE,
             center_x=WINDOW_WIDTH//2,
             center_y=WINDOW_HEIGHT//2
         )
@@ -164,13 +112,40 @@ class MyGame(arcade.Window):
             center_x=WINDOW_WIDTH//2,
             center_y=WINDOW_HEIGHT//2
         )
-        # TODO: Cache hitboxes using sprite hashes to hasten load times
-        self.track_inner_hitbox = align_hitbox(hitbox_from_image(TRACK_BORDER_INNER_SPRITE))
-        self.track_outer_hitbox = align_hitbox(hitbox_from_image(TRACK_TP_SPRITE))
-        self.track_inner_linestring = LineString(self.track_inner_hitbox)
-        self.track_outer_linestring = LineString(self.track_outer_hitbox)
 
-        self.track_list.extend((self.track_sprite, self.track_border_sprite))
+        self.track_inner_hitbox = get_hitbox_from_cache(TRACK_BORDER_INNER_SPRITE)
+        self.track_outer_hitbox = get_hitbox_from_cache(TRACK_BORDER_OUTER_SPRITE)
+
+        # Set up data for NN
+        self.player_position: Optional[arcade.Point] = (
+            self.player_list[0].center_x,
+            self.player_list[0].center_y
+        )
+        self.player_velocity: Optional[float] = self.player_list[0].velocity
+        self.player_angle: Optional[float] = self.player_list[0].angle
+        self.line_collision_points: arcade.PointList = []
+
+        self.track_inner_linearring = LinearRing(self.track_inner_hitbox)
+        self.track_outer_linearring = LinearRing(self.track_outer_hitbox)
+
+        self.track_list.extend(
+            (
+                self.track_sprite,
+                self.track_border_inner_sprite,
+                self.track_border_outer_sprite
+            )
+        )
+
+
+    def get_state(self):  # TODO: Move data collecting to the car class
+        """Returns the current state of the simulation"""
+
+        return [
+            *self.line_collision_points,
+            self.player_velocity,
+            self.player_angle,
+            self.player_position
+        ]
 
 
     def on_draw(self):
@@ -182,8 +157,6 @@ class MyGame(arcade.Window):
         # Draw all the sprites.
         self.track_list.draw()
         self.player_list.draw()
-        # self.player_sprite.draw_hit_box()
-        # self.track_border_sprite.draw_hit_box()
 
         # Player origin
         orig_x = self.player_sprite.center_x
@@ -192,7 +165,7 @@ class MyGame(arcade.Window):
         line_length = LASER_SCALED_LENGTH
 
         laser_lines: arcade.PointList = []
-        # line_collision_points: arcade.PointList = []
+        self.line_collision_points: arcade.PointList = []
 
         for offset in range(0, 360, LASER_ANGLE):
             laser_lines.append((orig_x, orig_y))
@@ -205,8 +178,8 @@ class MyGame(arcade.Window):
 
         hitbox = MultiLineString(
             (
-                LineString(self.track_inner_hitbox),
-                LineString(self.track_outer_hitbox)
+                self.track_inner_linearring,
+                self.track_outer_linearring
             )
         )
 
@@ -228,7 +201,8 @@ class MyGame(arcade.Window):
                     # dests = nearest_points(Point(orig_x, orig_y), points)
                     coord_x, coord_y = points[0].x, points[0].y
 
-                colour = arcade.color.BLUE
+                self.line_collision_points.append((coord_x, coord_y))
+                colour = arcade.color.GOLD
 
             arcade.draw_circle_filled(coord_x, coord_y, radius=5, color=colour)
 
@@ -306,34 +280,8 @@ class MyGame(arcade.Window):
             self.player_sprite.change_angle = 0
         if symbol == arcade.key.RIGHT:
             self.player_sprite.change_angle = 0
-        if symbol == arcade.key.UP:
+        if symbol in {arcade.key.UP, arcade.key.DOWN}:
             self.player_sprite.thrust = 0
-        elif symbol == arcade.key.DOWN:
-            self.player_sprite.thrust = 0
-
-
-def hitbox_from_image(image_path: FilePath, hit_box_detail: float = 4.5) -> arcade.PointList:
-    """Generates a valid hitbox from a given image file"""
-
-    with Image.open(image_path) as image:
-        hitbox = list(arcade.calculate_hit_box_points_detailed(image, hit_box_detail=hit_box_detail))
-
-    # Fills in the "doubles" needed by arcade.draw_lines in order to get full boundaries
-    # (otherwise it draws every other segment)
-    hitbox.extend(hitbox[:1])
-    for idx in range(len(hitbox)-3, 0, -1):
-        hitbox.insert(idx, hitbox[idx])
-
-    return hitbox
-
-
-def align_hitbox(hitbox: arcade.PointList, x_orig=WINDOW_WIDTH//2, y_orig=WINDOW_HEIGHT//2) -> arcade.PointList:
-    """Aligns a hitbox to a new origo, defaulting to the centre of the window"""
-
-    return [
-        (x+x_orig, y+y_orig)
-        for x, y, *_ in hitbox
-    ]
 
 
 def main():

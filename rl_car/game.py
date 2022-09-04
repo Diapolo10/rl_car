@@ -39,6 +39,7 @@ TRACK_BORDER_OUTER_SPRITE = IMAGE_DIR / 'track_border_outer.png'
 
 FilePath = Union[str, Path]
 
+
 class MyGame(arcade.Window):
     """Main application class"""
 
@@ -50,6 +51,7 @@ class MyGame(arcade.Window):
         # Variables that will hold sprite lists
         self.player_list: Optional[arcade.SpriteList] = None
         self.track_list: Optional[arcade.SpriteList] = None
+        self.player_alive = None
 
         # Set up the player info
         self.player_sprite: Optional[Player] = None
@@ -133,9 +135,11 @@ class MyGame(arcade.Window):
                 self.track_border_outer_sprite
             )
         )
-    
+
 
     def get_state(self):  # TODO: Move data collecting to the car class
+        """Returns the current state of the simulation"""
+
         return [
             *self.line_collision_points,
             self.player_velocity,
@@ -276,9 +280,7 @@ class MyGame(arcade.Window):
             self.player_sprite.change_angle = 0
         if symbol == arcade.key.RIGHT:
             self.player_sprite.change_angle = 0
-        if symbol == arcade.key.UP:
-            self.player_sprite.thrust = 0
-        elif symbol == arcade.key.DOWN:
+        if symbol in {arcade.key.UP, arcade.key.DOWN}:
             self.player_sprite.thrust = 0
 
 

@@ -1,6 +1,9 @@
-import arcade
+"""Code related to the track hitbox"""
+
 from pathlib import Path
 from typing import Union
+
+import arcade
 from PIL import Image  # type: ignore
 
 from config_file import (  # type: ignore

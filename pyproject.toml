@@ -24,6 +24,10 @@ per-file-ignores = """\
 __init__.py:F401,F403,F405 \
 game.py:F401 \
 """
+exclude = [
+    'example',
+    'main_tf2.py',
+]
 
 
 [tool.poetry]
@@ -102,6 +106,13 @@ disable = [
     'W0511',  # TO-DO -messages
     'W0611',  # Unused import
     'E0401',  # Import error
+]
+
+
+[tool.pylint.'MASTER']
+ignore-patterns = [
+    '.*main_tf2.py',
+    '.*example',
 ]
 
 

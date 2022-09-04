@@ -4,21 +4,32 @@ import random
 from pathlib import Path
 
 import numpy as np
-import pyglet
-import tensorflow as tf
+import pyglet  # type: ignore
+import tensorflow as tf  # type: ignore
 
-from config_file import (
+from config_file import (  # type: ignore
     MODEL_BATCH_SIZE,
     MODEL_GAMMA,
     MODEL_EXPLORE_START,
     MODEL_EXPLORE_STOP,
     MODEL_DECAY_RATE,
+    MODEL_LOAD,
+    MODEL_LOAD_TRAINING_MODEL,
+    MODEL_LOAD_TRAINING_MODEL_NUMBER,
+    MODEL_MAX_STEPS,
+    MODEL_MAX_TAU,
+    MODEL_MEMORY_SIZE,
+    MODEL_PRETRAIN_LENGTH,
+    MODEL_STARTING_EPISODE,
+    MODEL_TOTAL_EPISODES,
+    MODEL_TRAINING,
     STATE_SIZE,
     ACTION_SIZE,
     MODEL_LEARNING_RATE,
+    WINDOW_HEIGHT,
+    WINDOW_WIDTH,
 )
-from config_file import *  # TODO: Change later, quick fix
-from game import MyGame as Game
+from game import MyGame as Game  # type: ignore
 
 ACTION_COUNT = 9  # TODO: Move to config
 
@@ -405,7 +416,7 @@ if MODEL_TRAINING:
             next_state = game.get_state()
 
             # Add experience to memory
-            experience = state, action, reward, next_state, done
+            experience = state, action, reward, next_state, done  # type: ignore
             memory.store(experience)
 
             # Our state is now the next_state
@@ -555,7 +566,7 @@ if MODEL_TRAINING:
 
             state = game.get_state()
 
-            while step < max_steps:
+            while step < MODEL_MAX_STEPS:
                 step += 1
 
                 # Increase the C step
@@ -584,7 +595,7 @@ if MODEL_TRAINING:
                 # If the game is finished
                 if done:
                     # the episode ends so no next state
-                    next_state = np.zeros(state.shape, dtype=np.int)  # changed
+                    next_state = np.zeros(state.shape, dtype=np.uint)  # changed
 
                     # Set step = max_steps to end the episode
                     step = MODEL_MAX_STEPS
@@ -609,7 +620,7 @@ if MODEL_TRAINING:
                     next_state = game.get_state()
 
                     # Add experience to memory
-                    experience = state, action, reward, next_state, done
+                    experience = state, action, reward, next_state, done  # type: ignore
                     memory.store(experience)
 
                     # st+1 is now our current state
@@ -617,7 +628,7 @@ if MODEL_TRAINING:
 
                 ### LEARNING PART
                 # Obtain random mini-batch from memory
-                tree_idx, batch, ISWeights_mb = memory.sample(batch_size)
+                tree_idx, batch, ISWeights_mb = memory.sample(MODEL_BATCH_SIZE)
 
                 states_mb = np.array([each[0][0] for each in batch], ndmin=2)
                 actions_mb = np.array([each[0][1] for each in batch])
@@ -682,9 +693,9 @@ if MODEL_TRAINING:
                     print("Model updated")
 
             if (episode < 100 and episode % 5 == 0) or (episode % 1000 == 0):  # TODO: Fix all the lines below
-                directory = "./models/model{}".format(episode)
-                if not os.path.exists(directory):
-                    os.makedirs(directory)
+                directory = Path(f"./models/model{episode}")
+                if not directory.exists():
+                    directory.mkdir(parents=True, exist_ok=True)
                 save_path = saver.save(sess, "./models/model{}/models/model.ckpt".format(episode))
                 # print("Model Saved")
 
@@ -694,7 +705,7 @@ if MODEL_TRAINING:
                 print("Model Saved")
 else:
     print("setting up window")
-    window = MyWindow(displayWidth, displayHeight, "AI Learns to Drive", resizable=False)
+    window = MyWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "AI Learns to Drive", resizable=False)
     pyglet.app.run()
 
 # print("testing")

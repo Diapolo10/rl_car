@@ -1,8 +1,10 @@
-import arcade
-import math
+"""Implements vehicles"""
 
+import math
 from pathlib import Path
 from typing import Union
+
+import arcade
 
 from config_file import (  # type: ignore
     WINDOW_WIDTH,

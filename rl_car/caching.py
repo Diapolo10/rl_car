@@ -1,12 +1,14 @@
+"""Implements caching for hitboxes"""
+
 import json
 import hashlib
 from pathlib import Path
 from typing import Optional, Union
 
 from arcade import PointList
-from PIL import Image
+from PIL import Image  # type: ignore
 
-from track import align_hitbox, hitbox_from_image
+from track import align_hitbox, hitbox_from_image  # type: ignore
 
 CACHE_FILE = Path(__file__).parent / 'cache.json'
 
@@ -34,9 +36,9 @@ def get_hitbox_from_cache(image_file: FilePath) -> PointList:
         status = "Hitbox data fetched from cache."
 
     print(status)  # TODO: Use logging instead
-    
+
     return hitbox
-     
+
 
 def add_hitbox_to_cache(image_file: FilePath, hitbox: PointList, image_hash: Optional[str] = None):
     """Add hitbox for a image file to the cache"""

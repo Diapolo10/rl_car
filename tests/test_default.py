@@ -4,6 +4,7 @@
 
 
 def test_stub():
+    """Dummy test"""
+
     assert True
     assert not False
-    assert "complex motives"

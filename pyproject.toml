@@ -79,7 +79,7 @@ tensorflow = '^2.11.0'
 
 
 [tool.poetry.dev-dependencies]
-coverage = {version = '^6.5.0', extras = ['toml',]}
+coverage = {version = '^7.1.0', extras = ['toml',]}
 flake8 = '^6.0.0'
 mypy = '^0.941'
 pylint = '^2.16.2'

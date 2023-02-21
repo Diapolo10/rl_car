@@ -19,12 +19,10 @@ jobs:
       actions: read
       contents: read
       security-events: write
-
     strategy:
       fail-fast: false
       matrix:
         language: [ 'python' ]
-
     steps:
 
     - name: Checkout repository
@@ -42,3 +40,4 @@ jobs:
       uses: github/codeql-action/analyze@v2
       with:
         category: "/language:${{matrix.language}}"
+

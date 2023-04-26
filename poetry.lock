@@ -2075,14 +2075,14 @@ opt-einsum = ["opt-einsum (>=3.3)"]
 
 [[package]]
 name = "tox"
-version = "4.5.0"
+version = "4.5.1"
 description = "tox is a generic virtualenv management and test command line tool"
 category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "tox-4.5.0-py3-none-any.whl", hash = "sha256:dae5823ac7b31514d33c6aabc332f19187d7842d1e07d88f00dd329e79a1737d"},
-    {file = "tox-4.5.0.tar.gz", hash = "sha256:231382d5ecda16878c572a252158219a5d43936fd49da92a0d811ec0debfef87"},
+    {file = "tox-4.5.1-py3-none-any.whl", hash = "sha256:d25a2e6cb261adc489604fafd76cd689efeadfa79709965e965668d6d3f63046"},
+    {file = "tox-4.5.1.tar.gz", hash = "sha256:5a2eac5fb816779dfdf5cb00fecbc27eb0524e4626626bb1de84747b24cacc56"},
 ]
 
 [package.dependencies]
@@ -2344,4 +2344,4 @@ testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8.1,<3.11"
-content-hash = "ec230b9b337506d92a25c0e41b961e53e4cd32ad43200f8f716e8127d74eff8d"
+content-hash = "352fe23b840fb557cb2d9e84d50994db05e7d5b43836d26477705b65f993d380"

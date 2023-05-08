@@ -75,7 +75,7 @@ arcade = '^2.6.17'
 grpcio = '~1.54.0'
 numpy = '^1.24.3'
 shapely = '^2.0.1'
-torch = '^2.0.0'
+torch = '^2.0.1'
 tensorflow = '^2.11.1'
 
 

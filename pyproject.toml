@@ -83,7 +83,7 @@ tensorflow = '^2.11.1'
 coverage = {version = '^7.2.7', extras = ['toml',]}
 flake8 = '^6.1.0'
 flake8-pyproject = '^1.2.3'
-mypy = '^1.4.1'
+mypy = '^1.5.0'
 pylint = '^2.17.5'
 pytest = '^7.4.0'
 pytest-cov = '^4.1.0'

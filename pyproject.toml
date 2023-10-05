@@ -75,7 +75,7 @@ arcade = '^2.6.17'
 grpcio = '^1.59.0'
 numpy = '^1.24.0'
 shapely = '^2.0.1'
-torch = '^2.0.1'
+torch = '^2.1.0'
 tensorflow = '~2.11.0'  # Last known version with Windows support
 tensorflow-io-gcs-filesystem = '~0.34.0'  # Ditto
 

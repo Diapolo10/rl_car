@@ -81,7 +81,7 @@ tensorflow-io-gcs-filesystem = '~0.34.0'  # Ditto
 
 
 [tool.poetry.group.dev.dependencies]
-mypy = '^1.6.1'
+mypy = '^1.7.0'
 
 
 [tool.poetry.group.linters]

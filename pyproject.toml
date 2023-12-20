@@ -77,7 +77,7 @@ numpy = '^1.24.0'
 shapely = '^2.0.2'
 torch = '^2.1.2'
 tensorflow = '~2.11.0'  # Last known version with Windows support
-tensorflow-io-gcs-filesystem = '~0.34.0'  # Ditto
+tensorflow-io-gcs-filesystem = '~0.35.0'  # Ditto
 
 
 [tool.poetry.group.dev.dependencies]

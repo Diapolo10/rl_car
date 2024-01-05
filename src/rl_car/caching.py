@@ -1,18 +1,23 @@
 """Implements caching for hitboxes"""
 
-import json
+from __future__ import annotations
+
 import hashlib
-from pathlib import Path
-from typing import Optional, Union
+import json
+from typing import TYPE_CHECKING
 
-from arcade import PointList
-from PIL import Image  # type: ignore
+from PIL import Image
 
-from track import align_hitbox, hitbox_from_image  # type: ignore
+from rl_car.config import CACHE_FILE
+from rl_car.track import (
+    align_hitbox,
+    hitbox_from_image,
+)
 
-CACHE_FILE = Path(__file__).parent / 'cache.json'
+if TYPE_CHECKING:
+    from arcade import PointList
 
-FilePath = Union[str, Path]
+    from rl_car.config import FilePath
 
 
 def get_hitbox_from_cache(image_file: FilePath) -> PointList:
@@ -26,7 +31,7 @@ def get_hitbox_from_cache(image_file: FilePath) -> PointList:
     cache = json.loads(CACHE_FILE.read_text())
 
     with Image.open(image_file) as image:
-        image_hash = hashlib.md5(image.tobytes()).hexdigest()
+        image_hash = hashlib.sha256(image.tobytes()).hexdigest()
 
     if image_hash not in cache:
         hitbox = align_hitbox(hitbox_from_image(image_file))
@@ -40,14 +45,14 @@ def get_hitbox_from_cache(image_file: FilePath) -> PointList:
     return hitbox
 
 
-def add_hitbox_to_cache(image_file: FilePath, hitbox: PointList, image_hash: Optional[str] = None):
+def add_hitbox_to_cache(image_file: FilePath, hitbox: PointList, image_hash: str | None = None):
     """Add hitbox for a image file to the cache"""
 
     status = "Successfully added generated hitbox to cache."
 
     if image_hash is None:
         with Image.open(image_file) as image:
-            image_hash = hashlib.md5(image.tobytes()).hexdigest()
+            image_hash = hashlib.sha256(image.tobytes()).hexdigest()
 
     cache = json.loads(CACHE_FILE.read_text())
     cache[image_hash] = hitbox

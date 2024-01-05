@@ -1,25 +1,27 @@
 """Implements vehicles"""
 
+from __future__ import annotations
+
 import math
-from pathlib import Path
-from typing import Union
+from typing import TYPE_CHECKING
 
 import arcade
 
-from config_file import (  # type: ignore
-    WINDOW_WIDTH,
-    WINDOW_HEIGHT,
+from rl_car.config import (
     DRAG,
-    MAX_SPEED
+    MAX_SPEED,
+    WINDOW_HEIGHT,
+    WINDOW_WIDTH,
 )
 
-FilePath = Union[str, Path]
+if TYPE_CHECKING:
+    from rl_car.config import FilePath
 
 
 class Player(arcade.Sprite):
     """ Player class """
 
-    def __init__(self, filename: FilePath, scale: float, angle=0):
+    def __init__(self, filename: FilePath, scale: float, angle=0) -> None:
         """Set up the car"""
 
         # Call the parent Sprite constructor
@@ -33,7 +35,7 @@ class Player(arcade.Sprite):
         self.drag: float = DRAG
 
 
-    def update(self):
+    def update(self):  # NOTE: Might need to switch to on_update
         """Update position"""
 
         if self.speed > 0:
@@ -48,6 +50,7 @@ class Player(arcade.Sprite):
         if self.speed < -self.max_speed:
             self.speed = -self.max_speed
 
+        # NOTE: The Arcade API changes swapped angles to clockwise, changes may be needed
         self.change_x = -math.sin(math.radians(self.angle)) * self.speed
         self.change_y = math.cos(math.radians(self.angle)) * self.speed
 

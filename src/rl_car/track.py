@@ -1,18 +1,19 @@
 """Code related to the track hitbox"""
 
-from pathlib import Path
-from typing import Union
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
 
 import arcade
-from PIL import Image  # type: ignore
+from PIL import Image
 
-from config_file import (  # type: ignore
-    WINDOW_WIDTH,
+from src.rl_car.config import (
     WINDOW_HEIGHT,
+    WINDOW_WIDTH,
 )
 
-FilePath = Union[str, Path]
-
+if TYPE_CHECKING:
+    from src.rl_car.config import FilePath
 
 def hitbox_from_image(image_path: FilePath, hit_box_detail: float = 4.5) -> arcade.PointList:
     """Generates a valid hitbox from a given image file"""
@@ -29,7 +30,7 @@ def hitbox_from_image(image_path: FilePath, hit_box_detail: float = 4.5) -> arca
     return hitbox
 
 
-def align_hitbox(hitbox: arcade.PointList, x_orig=WINDOW_WIDTH//2, y_orig=WINDOW_HEIGHT//2) -> arcade.PointList:
+def align_hitbox(hitbox: arcade.PointList, x_orig = WINDOW_WIDTH // 2, y_orig = WINDOW_HEIGHT // 2) -> arcade.PointList:
     """Aligns a hitbox to a new origo, defaulting to the centre of the window"""
 
     return [

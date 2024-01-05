@@ -1,75 +1,61 @@
 """Implement the game"""
 
+from __future__ import annotations
+
 import math
-from pathlib import Path
-from typing import Optional, Union
 
 import arcade
-from shapely.geometry import LineString, Point, MultiPoint, MultiLineString, LinearRing  # type: ignore
-from shapely.ops import nearest_points  # type: ignore
+from shapely.geometry import LinearRing, LineString, MultiLineString, MultiPoint, Point
 
-from car import Player  # type: ignore
-from track import (  # type: ignore
-    hitbox_from_image,
-    align_hitbox
-)
-from caching import (  # type: ignore
-    get_hitbox_from_cache
-)
-
-from config_file import (  # type: ignore
-    WINDOW_WIDTH,
+from rl_car.caching import get_hitbox_from_cache
+from rl_car.car import Player
+from rl_car.config import (
+    CAR_SPRITE,
+    FRAMERATE_CAP,
+    FRICTION,
+    LASER_ANGLE,
+    LASER_SCALED_LENGTH,
+    MAX_SPEED,
+    SPRITE_SCALING,
+    TRACK_BARE_SPRITE,
+    TRACK_BORDER_INNER_SPRITE,
+    TRACK_BORDER_OUTER_SPRITE,
     WINDOW_HEIGHT,
     WINDOW_TITLE,
-    DRAG,
-    MAX_SPEED,
-    FRICTION,
-    SPRITE_SCALING,
-    LASER_SCALED_LENGTH,
-    LASER_ANGLE,
-    FRAMERATE_CAP,
+    WINDOW_WIDTH,
 )
-
-ROOT_DIR = Path(__file__).parent
-IMAGE_DIR = ROOT_DIR / 'images'
-CAR_SPRITE = IMAGE_DIR / 'car1.png'
-TRACK_BARE_SPRITE = IMAGE_DIR / 'track_bare.png'
-TRACK_BORDER_INNER_SPRITE = IMAGE_DIR / 'track_border_inner.png'
-TRACK_BORDER_OUTER_SPRITE = IMAGE_DIR / 'track_border_outer.png'
-
-FilePath = Union[str, Path]
 
 
 class MyGame(arcade.Window):
     """Main application class"""
 
-    def __init__(self, width: int, height: int, title: str):
+    def __init__(self, width: int, height: int, title: str) -> None:
         """Initialiser"""
 
         super().__init__(width, height, title, update_rate=1/FRAMERATE_CAP, vsync=True)
 
         # Variables that will hold sprite lists
-        self.player_list: Optional[arcade.SpriteList] = None
-        self.track_list: Optional[arcade.SpriteList] = None
+        self.player_list: arcade.SpriteList | None = None
+        self.track_list: arcade.SpriteList | None = None
         self.player_alive = None
 
         # Set up the player info
-        self.player_sprite: Optional[Player] = None
+        self.player_sprite: Player | None = None
 
         # Set up track info
-        self.track_sprite: Optional[arcade.Sprite] = None
-        self.track_border_sprite: Optional[arcade.Sprite] = None
-        self.track_border_inner_sprite: Optional[arcade.Sprite] = None
-        self.track_border_outer_sprite: Optional[arcade.Sprite] = None
+        self.track_sprite: arcade.Sprite | None = None
+        self.track_border_sprite: arcade.Sprite | None = None
+        self.track_border_inner_sprite: arcade.Sprite | None = None
+        self.track_border_outer_sprite: arcade.Sprite | None = None
         self.track_inner_hitbox: arcade.PointList = []
         self.track_outer_hitbox: arcade.PointList = []
-        self.track_inner_linearring: Optional[LinearRing] = None
-        self.track_outer_linearring: Optional[LinearRing] = None
+        self.track_inner_linearring: LinearRing | None = None
+        self.track_outer_linearring: LinearRing | None = None
 
         # Set up data for NN
-        self.player_position: Optional[arcade.Point] = None
-        self.player_velocity: Optional[float] = None
-        self.player_angle: Optional[float] = None
+        self.player_position: arcade.Point | None = None
+        self.player_velocity: float | None = None
+        self.player_angle: float | None = None
         self.line_collision_points: arcade.PointList = []
 
         # Track the current state of what key is pressed
@@ -100,29 +86,30 @@ class MyGame(arcade.Window):
         self.track_sprite = arcade.Sprite(
             TRACK_BARE_SPRITE,
             center_x=WINDOW_WIDTH//2,
-            center_y=WINDOW_HEIGHT//2
+            center_y=WINDOW_HEIGHT//2,
         )
         self.track_border_inner_sprite = arcade.Sprite(
             TRACK_BORDER_INNER_SPRITE,
             center_x=WINDOW_WIDTH//2,
-            center_y=WINDOW_HEIGHT//2
+            center_y=WINDOW_HEIGHT//2,
         )
         self.track_border_outer_sprite = arcade.Sprite(
             TRACK_BORDER_OUTER_SPRITE,
             center_x=WINDOW_WIDTH//2,
-            center_y=WINDOW_HEIGHT//2
+            center_y=WINDOW_HEIGHT//2,
         )
 
         self.track_inner_hitbox = get_hitbox_from_cache(TRACK_BORDER_INNER_SPRITE)
         self.track_outer_hitbox = get_hitbox_from_cache(TRACK_BORDER_OUTER_SPRITE)
 
         # Set up data for NN
-        self.player_position: Optional[arcade.Point] = (
+        self.player_position: arcade.Point | None = (
             self.player_list[0].center_x,
-            self.player_list[0].center_y
+            self.player_list[0].center_y,
         )
-        self.player_velocity: Optional[float] = self.player_list[0].velocity
-        self.player_angle: Optional[float] = self.player_list[0].angle
+        self.player_velocity: float | None = self.player_list[0].velocity
+        # NOTE: The Arcade API changes swapped angles to clockwise, changes may be needed
+        self.player_angle: float | None = self.player_list[0].angle
         self.line_collision_points: arcade.PointList = []
 
         self.track_inner_linearring = LinearRing(self.track_inner_hitbox)
@@ -132,8 +119,8 @@ class MyGame(arcade.Window):
             (
                 self.track_sprite,
                 self.track_border_inner_sprite,
-                self.track_border_outer_sprite
-            )
+                self.track_border_outer_sprite,
+            ),
         )
 
 
@@ -144,7 +131,7 @@ class MyGame(arcade.Window):
             *self.line_collision_points,
             self.player_velocity,
             self.player_angle,
-            self.player_position
+            self.player_position,
         ]
 
 
@@ -161,6 +148,7 @@ class MyGame(arcade.Window):
         # Player origin
         orig_x = self.player_sprite.center_x
         orig_y = self.player_sprite.center_y
+        # NOTE: The Arcade API changes swapped angles to clockwise, changes may be needed
         angle = self.player_sprite.angle
         line_length = LASER_SCALED_LENGTH
 
@@ -172,15 +160,15 @@ class MyGame(arcade.Window):
             laser_lines.append(
                 (
                     orig_x - line_length * math.sin(math.radians(angle+offset)),
-                    orig_y + line_length * math.cos(math.radians(angle+offset))
-                )
+                    orig_y + line_length * math.cos(math.radians(angle+offset)),
+                ),
             )
 
         hitbox = MultiLineString(
             (
                 self.track_inner_linearring,
-                self.track_outer_linearring
-            )
+                self.track_outer_linearring,
+            ),
         )
 
         for start, stop in zip(laser_lines[::2], laser_lines[1::2]):
@@ -198,7 +186,6 @@ class MyGame(arcade.Window):
                     (coord_x, coord_y), *_ = point.coords
                 elif isinstance(point, MultiPoint):
                     points = point.geoms
-                    # dests = nearest_points(Point(orig_x, orig_y), points)
                     coord_x, coord_y = points[0].x, points[0].y
 
                 self.line_collision_points.append((coord_x, coord_y))
@@ -213,6 +200,7 @@ class MyGame(arcade.Window):
         # Display speed
         arcade.draw_text(f"X Speed: {self.player_sprite.change_x:6.3f}", 10, 90, arcade.color.BLACK)
         arcade.draw_text(f"Y Speed: {self.player_sprite.change_y:6.3f}", 10, 70, arcade.color.BLACK)
+        # NOTE: The Arcade API changes swapped angles to clockwise, changes may be needed
         arcade.draw_text(f"Angle: {self.player_sprite.angle:6.3f}", 10, 50, arcade.color.BLACK)
 
 

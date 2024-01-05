@@ -142,5 +142,8 @@ tests/reports
 # Makefile installation stamp
 .install.stamp
 
-rl_car/example
+# Ruff
+.ruff_cache
+
+src/rl_car/example
 cache.json

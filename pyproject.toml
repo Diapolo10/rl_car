@@ -55,7 +55,7 @@ classifiers = [
 
 [tool.poetry.dependencies]
 python = "^3.10,<3.12"
-arcade = "^3.0.0"
+arcade = "^3.0.0.dev25"
 # grpcio = "^1.60.0"
 numpy = "^1.26.3"
 shapely = "^2.0.2"

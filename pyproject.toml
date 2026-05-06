@@ -65,7 +65,7 @@ torch = "^2.1.2"
 
 
 [tool.poetry.group.dev.dependencies]
-mypy = "^1.8.0"
+mypy = ">=1.8,<3.0"
 types-Pillow = "^10.1.0.2"
 
 

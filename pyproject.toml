@@ -41,8 +41,9 @@ classifiers = [
     "Intended Audience :: Science/Research",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
-    "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Programming Language :: Python :: Implementation :: CPython",
     "Programming Language :: Python :: Implementation :: PyPy",
     "Topic :: Education",
@@ -54,19 +55,18 @@ classifiers = [
 
 
 [tool.poetry.dependencies]
-python = "^3.10,<3.12"
-arcade = "^3.0.0.dev25"
+python = "^3.12,<3.15"
+arcade = "^3.3.3"
 # grpcio = "^1.60.0"
-numpy = "^2.0.0"
-shapely = "^2.0.2"
-torch = "^2.1.2"
+numpy = "^2.4.4"
+shapely = "^2.1.2"
+torch = "^2.11.0"
 # tensorflow = "~2.11.0"  # Last known version with Windows support
 # tensorflow-io-gcs-filesystem = "~0.35.0"  # Ditto
 
 
 [tool.poetry.group.dev.dependencies]
-mypy = ">=1.8,<3.0"
-types-Pillow = "^10.1.0.2"
+mypy = ">=2.1.0"
 
 
 [tool.poetry.group.linters]
@@ -74,7 +74,7 @@ optional = true
 
 
 [tool.poetry.group.linters.dependencies]
-ruff = "^0.15.0"
+ruff = "^0.15.12"
 
 
 [tool.poetry.group.tests]
@@ -82,10 +82,10 @@ optional = true
 
 
 [tool.poetry.group.tests.dependencies]
-pytest = "^9.0.1"
-pytest-cov = "^7.0.0"
-tox = "^4.11.4"
-tox-gh-actions = "^3.2.0"
+pytest = "^9.0.3"
+pytest-cov = "^7.1.0"
+tox = "^4.53.1"
+tox-gh-actions = "^3.5.0"
 
 
 [tool.poetry.urls]
@@ -202,14 +202,15 @@ ban-relative-imports = "all"
 [tool.tox]
 legacy_tox_ini = """
 [tox]
-envlist = py310, py311, pypy3
+envlist = py3{12, 13, 14}, pypy3
 skip_missing_interpreters = true
 
 [gh-actions]
 python =
-    3.10: py310
-    3.11: py311
-    pypy-3.10: pypy3
+    3.12: py312
+    3.13: py313
+    3.14: py314
+    pypy-3.12: pypy3
 
 [testenv]
 passenv = GITHUB_*

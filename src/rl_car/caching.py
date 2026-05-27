@@ -1,7 +1,8 @@
-"""Implements caching for hitboxes"""
+"""Implements caching for hitboxes."""
 
 from __future__ import annotations
 
+import contextlib
 import hashlib
 import json
 from typing import TYPE_CHECKING
@@ -21,10 +22,7 @@ if TYPE_CHECKING:
 
 
 def get_hitbox_from_cache(image_file: FilePath) -> PointList:
-    """Get hitbox for a given image file from the cache"""
-
-    status = "No saved hitbox for the given imagefile."
-
+    """Get hitbox for a given image file from the cache."""
     if not CACHE_FILE.exists():
         CACHE_FILE.write_text('{}')
 
@@ -38,18 +36,13 @@ def get_hitbox_from_cache(image_file: FilePath) -> PointList:
         add_hitbox_to_cache(image_file, hitbox, image_hash)
     else:
         hitbox = cache[image_hash]
-        status = "Hitbox data fetched from cache."
 
-    print(status)  # TODO: Use logging instead
 
     return hitbox
 
 
-def add_hitbox_to_cache(image_file: FilePath, hitbox: PointList, image_hash: str | None = None):
-    """Add hitbox for a image file to the cache"""
-
-    status = "Successfully added generated hitbox to cache."
-
+def add_hitbox_to_cache(image_file: FilePath, hitbox: PointList, image_hash: str | None = None) -> None:
+    """Add hitbox for a image file to the cache."""
     if image_hash is None:
         with Image.open(image_file) as image:
             image_hash = hashlib.sha256(image.tobytes()).hexdigest()
@@ -57,9 +50,6 @@ def add_hitbox_to_cache(image_file: FilePath, hitbox: PointList, image_hash: str
     cache = json.loads(CACHE_FILE.read_text())
     cache[image_hash] = hitbox
 
-    try:
+    with contextlib.suppress(TypeError):
         CACHE_FILE.write_text(json.dumps(cache))
-    except TypeError as err:
-        status = f"Failed to add JSON-incompatible type to cache, check hitbox data --\n{err}"
 
-    print(status)  # TODO: Use logging instead

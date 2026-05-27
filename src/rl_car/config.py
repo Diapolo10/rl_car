@@ -1,9 +1,8 @@
-"""Global constants used in the project"""
+"""Global constants used in the project."""
 
 from pathlib import Path
-from typing import TypeAlias
 
-FilePath: TypeAlias = str | Path
+type FilePath = str | Path
 
 ROOT_DIR = Path(__file__).parent
 IMAGE_DIR = ROOT_DIR / 'images'

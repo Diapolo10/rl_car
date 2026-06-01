@@ -1,10 +1,10 @@
-"""Implements the neural network running the game"""
+"""Implements the neural network running the game."""
 
 from __future__ import annotations
 
 import random
 from collections import deque
-from typing import TYPE_CHECKING, NamedTuple
+from typing import TYPE_CHECKING, Any, NamedTuple
 
 import torch
 from torch import nn
@@ -12,7 +12,7 @@ from torch import nn
 if TYPE_CHECKING:
     import arcade
 
-# from rl_car.config import (  # type: ignore
+# from rl_car.config import (  # type: ignore[misc]
 #     MODEL_BATCH_SIZE,
 #     MODEL_GAMMA,
 #     MODEL_EXPLORE_START,
@@ -20,10 +20,12 @@ if TYPE_CHECKING:
 #     MODEL_DECAY_RATE,
 #     STATE_SIZE,
 
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')  # pylint: disable=no-member
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")  # pylint: disable=no-member
 
 
 class Transition(NamedTuple):
+    """Represents a single transition in the reinforcement learning process."""
+
     state: tuple[arcade.PointList, float | None, float | None, arcade.Point | None]
     action: list[int]
     next_state: tuple[arcade.PointList, float | None, float | None, arcade.Point | None]
@@ -31,29 +33,32 @@ class Transition(NamedTuple):
 
 
 class ReplayMemory:
-    """Something"""
+    """Store transitions for experience replay."""
 
     def __init__(self, capacity: int) -> None:
-        self.memory: deque[Transition] = deque([], maxlen=capacity)
+        """Initialise the replay memory with a given capacity."""
+        self.memory: deque[Transition] = deque(maxlen=capacity)
 
-    def push(self, *args):
-        """Save a transition"""
-
+    def push(
+        self,
+        *args: Any,  # noqa: ANN401
+    ) -> None:
+        """Save a transition."""
         self.memory.append(Transition(*args))
 
-    def sample(self, batch_size: int):
-        """Returns a random sample of the memory"""
-
+    def sample(self, batch_size: int) -> list[Transition]:
+        """Return a random sample of the memory."""
         return random.sample(self.memory, batch_size)
 
     def __len__(self) -> int:
+        """Return the current size of the memory."""
         return len(self.memory)
 
 
 class DDDQNetwork(nn.Module):
-    """Magic"""
+    """Magic."""
 
-    def __init__(self, state_size, action_size, learning_rate, name) -> None:
+    def __init__(self, state_size: int, action_size: int, learning_rate: float, name: str) -> None:
         super().__init__()
         self.state_size = state_size
         self.action_size = action_size

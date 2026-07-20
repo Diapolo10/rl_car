@@ -1714,14 +1714,14 @@ pyyaml = ["pyyaml"]
 
 [[package]]
 name = "tox"
-version = "4.57.0"
+version = "4.57.1"
 description = "tox is a generic virtualenv management and test command line tool"
 optional = false
 python-versions = ">=3.10"
 groups = ["tests"]
 files = [
-    {file = "tox-4.57.0-py3-none-any.whl", hash = "sha256:ede907fa911b55cbf1e7dc823a5b455a164755a172124675b811210676ba31c2"},
-    {file = "tox-4.57.0.tar.gz", hash = "sha256:b2f758011dfbad7be4b4cc39d2cae21deeb3c3c186e6d7a92d7630eade4218cf"},
+    {file = "tox-4.57.1-py3-none-any.whl", hash = "sha256:0ad05a032ee62a458d9520e54d8b40411d3f1d918991fd8a49cb02d18773db28"},
+    {file = "tox-4.57.1.tar.gz", hash = "sha256:80a929c58f4fb0b47267dad094336ba7c8dd929eea4cd45d537e02633d902f97"},
 ]
 
 [package.dependencies]

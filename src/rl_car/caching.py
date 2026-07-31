@@ -1,4 +1,4 @@
-"""Implements caching for hitboxes"""
+"""Implement caching for hitboxes."""
 
 from __future__ import annotations
 
@@ -21,12 +21,11 @@ if TYPE_CHECKING:
 
 
 def get_hitbox_from_cache(image_file: FilePath) -> PointList:
-    """Get hitbox for a given image file from the cache"""
-
+    """Get hitbox for a given image file from the cache."""
     status = "No saved hitbox for the given imagefile."
 
     if not CACHE_FILE.exists():
-        CACHE_FILE.write_text('{}')
+        CACHE_FILE.write_text("{}")
 
     cache = json.loads(CACHE_FILE.read_text())
 
@@ -45,9 +44,8 @@ def get_hitbox_from_cache(image_file: FilePath) -> PointList:
     return hitbox
 
 
-def add_hitbox_to_cache(image_file: FilePath, hitbox: PointList, image_hash: str | None = None):
-    """Add hitbox for a image file to the cache"""
-
+def add_hitbox_to_cache(image_file: FilePath, hitbox: PointList, image_hash: str | None = None) -> None:
+    """Add hitbox for a image file to the cache."""
     status = "Successfully added generated hitbox to cache."
 
     if image_hash is None:

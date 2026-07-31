@@ -1,4 +1,4 @@
-"""Global constants used in the project"""
+"""Global constants used in the project."""
 
 from pathlib import Path
 from typing import TypeAlias
@@ -6,13 +6,13 @@ from typing import TypeAlias
 FilePath: TypeAlias = str | Path
 
 ROOT_DIR = Path(__file__).parent
-IMAGE_DIR = ROOT_DIR / 'images'
-CAR_SPRITE = IMAGE_DIR / 'car1.png'
-TRACK_BARE_SPRITE = IMAGE_DIR / 'track_bare.png'
-TRACK_BORDER_INNER_SPRITE = IMAGE_DIR / 'track_border_inner.png'
-TRACK_BORDER_OUTER_SPRITE = IMAGE_DIR / 'track_border_outer.png'
+IMAGE_DIR = ROOT_DIR / "images"
+CAR_SPRITE = IMAGE_DIR / "car1.png"
+TRACK_BARE_SPRITE = IMAGE_DIR / "track_bare.png"
+TRACK_BORDER_INNER_SPRITE = IMAGE_DIR / "track_border_inner.png"
+TRACK_BORDER_OUTER_SPRITE = IMAGE_DIR / "track_border_outer.png"
 
-CACHE_FILE = Path(__file__).parent / 'cache.json'
+CACHE_FILE = Path(__file__).parent / "cache.json"
 
 # Window
 WINDOW_HEIGHT: int = 1000
@@ -37,20 +37,20 @@ LASER_ANGLE: int = 360 // LASER_COUNT
 
 # Our input is a stack of 4 frames hence 100x120x4 (Width, height, channels)
 STATE_SIZE: list[int] = [15]
-ACTION_SIZE: int = 7                  # 7 possible actions
+ACTION_SIZE: int = 7  # 7 possible actions
 MODEL_LEARNING_RATE: float = 0.00025  # Alpha (aka learning rate)
 
 # TRAINING HYPERPARAMETERS
 MODEL_TOTAL_EPISODES: int = 50_000  # Total episodes for training
-MODEL_MAX_STEPS: int = 5_000        # Max possible steps in an episode
+MODEL_MAX_STEPS: int = 5_000  # Max possible steps in an episode
 MODEL_BATCH_SIZE: int = 64
 
 # FIXED Q TARGETS HYPERPARAMETERS
 MODEL_MAX_TAU: int = 10000  # Tau is the C step where we update our target network
 
 # EXPLORATION HYPERPARAMETERS for epsilon greedy strategy
-MODEL_EXPLORE_START: float = 1.0   # exploration probability at start
-MODEL_EXPLORE_STOP: float = 0.01   # minimum exploration probability
+MODEL_EXPLORE_START: float = 1.0  # exploration probability at start
+MODEL_EXPLORE_STOP: float = 0.01  # minimum exploration probability
 MODEL_DECAY_RATE: float = 0.00005  # exponential decay rate for exploration prob
 
 # Q LEARNING hyperparameters

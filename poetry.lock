@@ -2,19 +2,19 @@
 
 [[package]]
 name = "arcade"
-version = "4.0.0.dev6"
+version = "4.0.0.dev7"
 description = "Arcade Game Development Library"
 optional = false
 python-versions = ">=3.10"
 groups = ["main"]
 files = [
-    {file = "arcade-4.0.0.dev6-py3-none-any.whl", hash = "sha256:71ab6635ea69bfeee690d3342751876590f1c30463c6a37f74db40337b577831"},
-    {file = "arcade-4.0.0.dev6.tar.gz", hash = "sha256:0a5f6b91cd9d95cdbec6a4342c74f7c87ba1574320cbcf43c821749686fcc4ca"},
+    {file = "arcade-4.0.0.dev7-py3-none-any.whl", hash = "sha256:9d0f263b568542eda30ddd20fdd069db67921fe8571cfa2047576594208f811a"},
+    {file = "arcade-4.0.0.dev7.tar.gz", hash = "sha256:df92a0faee6b95fbd71e74f0abab8346a8433527769323637b51f2e1d773f1f9"},
 ]
 
 [package.dependencies]
 pillow = ">=11.3.0"
-pyglet = "3.0.dev7"
+pyglet = "3.0.dev8"
 pytiled-parser = ">=2.2.9,<2.3.0"
 
 [[package]]
@@ -1205,14 +1205,14 @@ testing = ["coverage", "pytest", "pytest-benchmark"]
 
 [[package]]
 name = "pyglet"
-version = "3.0.dev7"
+version = "3.0.dev8"
 description = "pyglet is a cross-platform games and multimedia package."
 optional = false
 python-versions = ">=3.10"
 groups = ["main"]
 files = [
-    {file = "pyglet-3.0.dev7-py3-none-any.whl", hash = "sha256:434cc9aaa17d7eb0d52bd9d8fca54ffca3ca04e20f7dfa9f9abe5df4c306bff6"},
-    {file = "pyglet-3.0.dev7.tar.gz", hash = "sha256:4b77166153d557a7f8d3e0d1da92a45eb75904f87189495ee1273036c3a4abda"},
+    {file = "pyglet-3.0.dev8-py3-none-any.whl", hash = "sha256:f49e70582247ee7c632f7d201a15708ff7cde1e4452b736a136d96da7df72343"},
+    {file = "pyglet-3.0.dev8.tar.gz", hash = "sha256:41a7a8b810605b53efed11231249e8d66b1c09f0edd48863f86eab133f7460b6"},
 ]
 
 [[package]]
